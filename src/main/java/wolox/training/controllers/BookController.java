@@ -1,7 +1,9 @@
 package wolox.training.controllers;
 
 import java.util.List;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.constants.ExceptionsConstants;
 import wolox.training.exceptions.BookNotFoundException;
+import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
@@ -45,20 +48,32 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> create(@RequestBody Book book) {
-        return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
+    public ResponseEntity<Book> create(@RequestBody Book book) throws DatabaseException {
+        try {
+            return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
+        } catch (Exception e) {
+
+            throw new DatabaseException(ExceptionsConstants.DATA_SAVE_INTEGRITY_VIOLATION);
+        }
+
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Book> update(@PathVariable int id, @RequestBody Book book) throws BookNotFoundException, IdMismatchException {
+    public ResponseEntity<Book> update(@PathVariable int id, @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
         if(!bookRepository.existsById(id)) {
             throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }
 
         if(book.getId() != id) {
-            throw new IdMismatchException(ExceptionsConstants.ID_MISMATCH_EXCEPTION);
+            throw new IdMismatchException(ExceptionsConstants.ID_MISMATCH);
         }
-        return new ResponseEntity<>(bookRepository.save(book), HttpStatus.OK);
+
+        try {
+            return new ResponseEntity<>(bookRepository.save(book), HttpStatus.OK);
+        }  catch (Exception e) {
+            throw new DatabaseException(ExceptionsConstants.DATA_SAVE_INTEGRITY_VIOLATION);
+        }
+
     }
 
     @DeleteMapping("{id}")
@@ -66,6 +81,7 @@ public class BookController {
         if(!bookRepository.existsById(id)) {
             throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }
+        bookRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
