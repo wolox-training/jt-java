@@ -11,9 +11,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionsHandler {
 
-	@ExceptionHandler(BookNotFoundException.class)
+	@ExceptionHandler({
+			BookNotFoundException.class,
+			UserNotFoundException.class
+	})
 	public ResponseEntity<?> BookNotFoundHandler(Exception e) {
-		ExceptionsResponse response = new ExceptionsResponse("/books", e.getMessage());
+		ExceptionsResponse response = new ExceptionsResponse(e.getMessage());
+
+		if (e instanceof BookNotFoundException) {
+			response.setOrigin("/books");
+		} else if (e instanceof UserNotFoundException) {
+			response.setOrigin("/users");
+		}
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 
@@ -27,8 +36,7 @@ public class ExceptionsHandler {
 
 		if(e instanceof IdMismatchException) {
 			response.setOrigin("/books");
-		}
-		if(e instanceof MethodArgumentNotValidException) {
+		} else if(e instanceof MethodArgumentNotValidException) {
 			response.setError(Objects.requireNonNull(((MethodArgumentNotValidException) e).getBindingResult().getFieldError()).getDefaultMessage());
 		}
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

@@ -68,10 +68,8 @@ public class BookController {
         try {
             return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
         } catch (Exception e) {
-
             throw new DatabaseException(ExceptionsConstants.DATA_SAVE_INTEGRITY_VIOLATION);
         }
-
     }
 
     /**
@@ -98,7 +96,6 @@ public class BookController {
         }  catch (Exception e) {
             throw new DatabaseException(ExceptionsConstants.DATA_SAVE_INTEGRITY_VIOLATION);
         }
-
     }
 
     /**
@@ -115,6 +112,5 @@ public class BookController {
         bookRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
 }

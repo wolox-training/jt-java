@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import wolox.training.constants.ExceptionsConstants;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 
@@ -23,12 +24,15 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int id;
 
+	@NotNull(message = "User username cannot be null")
 	@Column(nullable = false)
 	private String username;
 
+	@NotNull(message = "User name cannot be null")
 	@Column(nullable = false)
 	private String name;
 
+	@NotNull(message = "User birthdate cannot be null")
 	@Column(nullable = false)
 	private Date birthdate;
 
