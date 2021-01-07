@@ -1,6 +1,7 @@
 package wolox.training.controllers;
 
 import java.util.List;
+import javax.validation.Valid;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,7 +49,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> create(@RequestBody Book book) throws DatabaseException {
+    public ResponseEntity<Book> create(@Valid @RequestBody Book book) throws DatabaseException {
         try {
             return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class BookController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Book> update(@PathVariable int id, @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
+    public ResponseEntity<Book> update(@PathVariable int id,@Valid @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
         if(!bookRepository.existsById(id)) {
             throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }

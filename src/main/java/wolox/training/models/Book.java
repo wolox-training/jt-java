@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "books")
@@ -17,27 +18,35 @@ public class Book {
 
 	private String genre;
 
+	@NotNull(message = "Book author cannot be null")
 	@Column(nullable = false)
 	private String author;
 
+	@NotNull(message = "Book image url cannot be null")
 	@Column(nullable = false)
 	private String image;
 
+	@NotNull(message = "Book title cannot be null")
 	@Column(nullable = false)
 	private String title;
 
+	@NotNull(message = "Book subtitle cannot be null")
 	@Column(nullable = false)
 	private String subtitle;
 
+	@NotNull(message = "Book publisher cannot be null")
 	@Column(nullable = false)
 	private String publisher;
 
+	@NotNull(message = "Book year cannot be null")
 	@Column(nullable = false)
 	private String year;
 
+	@NotNull(message = "Book pages cannot be null")
 	@Column(nullable = false)
-	private int pages;
+	private Integer pages;
 
+	@NotNull(message = "Book isbn cannot be null")
 	@Column(nullable = false)
 	private String isbn;
 
