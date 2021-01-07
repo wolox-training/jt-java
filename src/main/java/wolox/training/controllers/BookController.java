@@ -1,6 +1,8 @@
 package wolox.training.controllers;
 
 import java.util.List;
+
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +64,7 @@ public class BookController {
      * @throws DatabaseException: When the save method throws an error coming from the database
      */
     @PostMapping
-    public ResponseEntity<Book> create(@RequestBody Book book) throws DatabaseException {
+    public ResponseEntity<Book> create(@Valid @RequestBody Book book) throws DatabaseException {
         try {
             return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -82,7 +84,7 @@ public class BookController {
      * @throws DatabaseException: When the save method throws an error coming from the database
      */
     @PutMapping("{id}")
-    public ResponseEntity<Book> update(@PathVariable int id, @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
+    public ResponseEntity<Book> update(@PathVariable int id,@Valid @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
         if(!bookRepository.existsById(id)) {
             throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }
