@@ -1,10 +1,12 @@
 package wolox.training.models;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -49,6 +51,9 @@ public class Book {
 	@NotNull(message = "Book isbn cannot be null")
 	@Column(nullable = false)
 	private String isbn;
+
+	@ManyToMany(mappedBy = "books")
+	List<User> users;
 
 	public Book() {
 	}
@@ -145,6 +150,18 @@ public class Book {
 
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
+	}
+
+	public void setPages(Integer pages) {
+		this.pages = pages;
+	}
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<User> users) {
+		this.users = users;
 	}
 
 	@Override

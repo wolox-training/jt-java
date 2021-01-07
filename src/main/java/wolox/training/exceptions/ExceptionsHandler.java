@@ -20,7 +20,7 @@ public class ExceptionsHandler {
 	@ExceptionHandler({
 			IdMismatchException.class,
 			DataIntegrityViolationException.class,
-			MethodArgumentNotValidException.class
+			MethodArgumentNotValidException.class,
 	})
 	public ResponseEntity<?> DataIntegrityHandler(Exception e) {
 		ExceptionsResponse response = new ExceptionsResponse(e.getMessage());
