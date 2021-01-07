@@ -47,9 +47,9 @@ public class BookController {
 
     /**
      * Returns a specified book by the provided id
-     * @param id: Id of the book
+     * @param id: Id of the {@link Book}
      * @return A {@link Book}
-     * @throws BookNotFoundException: When the book id that was passed doesn't belong to any book
+     * @throws BookNotFoundException: When the book id that was passed doesn't belong to any {@link Book}
      */
     @GetMapping("{id}")
     public ResponseEntity<Book> get(@PathVariable int id) throws BookNotFoundException{
@@ -74,7 +74,7 @@ public class BookController {
 
     /**
      * Updates a specified {@link Book} receiving the new information in the same structure
-     * @param id: Id of the book
+     * @param id: Id of the {@link Book}
      * @param book: Data structure with the updated fields to update the {@link Book}
      * @return The updated {@link Book}
      * @throws BookNotFoundException: When the book id that was passed doesn't belong to any book
@@ -100,7 +100,7 @@ public class BookController {
 
     /**
      * Deletes a specified {@link Book} by its id
-     * @param id: Id of the book
+     * @param id: Id of the {@link Book}
      * @return An empty, No Content response
      * @throws BookNotFoundException: When the book id that was passed doesn't belong to any book
      */

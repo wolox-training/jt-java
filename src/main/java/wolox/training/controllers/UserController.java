@@ -44,8 +44,14 @@ public class UserController {
 		return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
 	}
 
+	/**
+	 * Returns a specified book by the provided id
+	 * @param id: Id of the {@link User}
+	 * @return A {@link User}
+	 * @throws UserNotFoundException: When the user id that was passed doesn't belong to any {@link User}
+	 */
 	@GetMapping("{id}")
-	public ResponseEntity<User> getAll(@PathVariable int id) throws UserNotFoundException {
+	public ResponseEntity<User> get(@PathVariable int id) throws UserNotFoundException {
 		return new ResponseEntity<>(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(
 				ExceptionsConstants.USER_NOT_FOUND)), HttpStatus.OK);
 	}
@@ -70,8 +76,8 @@ public class UserController {
 	 * @param id: Id of the {@link User}
 	 * @param user: Data structure with the updated fields to update the {@link User}
 	 * @return The updated {@link User}
-	 * @throws UserNotFoundException: When the user id that was passed doesn't belong to any user
-	 * @throws IdMismatchException : When the book id that was passed doesn't match the id that's in within the JSON
+	 * @throws UserNotFoundException: When the user id that was passed doesn't belong to any {@link User}
+	 * @throws IdMismatchException: When the id that was passed doesn't match the id that's in within the JSON
 	 * @throws DatabaseException: When the save method throws an error coming from the database
 	 */
 	@PutMapping("{id}")
@@ -96,7 +102,7 @@ public class UserController {
 	 * Deletes a specified {@link User} by its id
 	 * @param id: Id of the user
 	 * @return An empty, No Content response
-	 * @throws UserNotFoundException : When the user id that was passed doesn't belong to any user
+	 * @throws UserNotFoundException: UserNotFoundException: When the user id that was passed doesn't belong to any {@link User}
 	 */
 	@DeleteMapping("{id}")
 	public ResponseEntity<Void> delete(@PathVariable int id) throws UserNotFoundException {
@@ -107,6 +113,18 @@ public class UserController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
+	/**
+	 * Adds or removes a {@link Book} from the user's book list
+	 * @param userId: Id of the {@link User}
+	 * @param bookId: Id of the {@link Book}
+	 * @param action: Action to be performed
+	 * @return The updated {@link User}
+	 * @throws UserNotFoundException: When the user id that was passed doesn't belong to any {@link User}
+	 * @throws BookNotFoundException: When the book id that was passed doesn't belong to any {@link Book}
+	 * @throws BookAlreadyOwnedException: When the specified {@link User} already owns the provided {@link Book}
+	 * @throws ActionNotFoundException: When the provided action doesn't exist
+	 * @throws DatabaseException: When the save method throws an error coming from the database
+	 */
 	@PutMapping("{userId}/books/{bookId}")
 	public ResponseEntity<User> modifyBookList(@PathVariable int userId, @PathVariable int bookId, @RequestParam String action)
 			throws UserNotFoundException, BookNotFoundException, BookAlreadyOwnedException, ActionNotFoundException, DatabaseException {
