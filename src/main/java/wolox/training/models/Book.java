@@ -1,5 +1,9 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,44 +16,56 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "books")
+@ApiModel
+@JsonInclude(Include.NON_NULL)
 public class Book {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@ApiModelProperty(notes = "Id: Unique id, provided by the database")
 	private int id;
 
+	@ApiModelProperty(notes = "Genre: Book genre, could be Fantasy, Science Fiction, etc")
 	private String genre;
 
 	@NotNull(message = "Book author cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Author: Book's writer", required = true)
 	private String author;
 
 	@NotNull(message = "Book image url cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Image URL: Book's cover image url", required = true)
 	private String image;
 
 	@NotNull(message = "Book title cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Title: Book's main title", required = true)
 	private String title;
 
 	@NotNull(message = "Book subtitle cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Subtitle: Book's secondary title", required = true)
 	private String subtitle;
 
 	@NotNull(message = "Book publisher cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Publisher: Book's publisher house", required = true)
 	private String publisher;
 
 	@NotNull(message = "Book year cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Year: Book's publication year", required = true)
 	private String year;
 
 	@NotNull(message = "Book pages cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Pages: Book's pages quantity", required = true)
 	private Integer pages;
 
 	@NotNull(message = "Book isbn cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "ISBN: Book's unique ISBN", required = true)
 	private String isbn;
 
 	@ManyToMany(mappedBy = "books")

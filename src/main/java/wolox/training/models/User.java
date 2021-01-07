@@ -1,5 +1,9 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -18,22 +22,28 @@ import wolox.training.exceptions.BookAlreadyOwnedException;
 
 @Entity
 @Table(name = "users")
+@ApiModel
+@JsonInclude(Include.NON_NULL)
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@ApiModelProperty(notes = "Id: Unique id, provided by the database")
 	private int id;
 
 	@NotNull(message = "User username cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Username: User's unique username", required = true)
 	private String username;
 
 	@NotNull(message = "User name cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Name: User's name", required = true)
 	private String name;
 
 	@NotNull(message = "User birthdate cannot be null")
 	@Column(nullable = false)
+	@ApiModelProperty(notes = "Birthdate: User's day of birth", required = true)
 	private Date birthdate;
 
 	@ManyToMany
@@ -42,6 +52,7 @@ public class User {
 			joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
 	)
+	@ApiModelProperty(notes = "Books: Books assigned to the user", required = true)
 	private List<Book> books;
 
 	public int getId() {
