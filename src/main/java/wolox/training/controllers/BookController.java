@@ -1,9 +1,7 @@
 package wolox.training.controllers;
 
 import java.util.List;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -36,17 +34,33 @@ public class BookController {
         return "greeting";
     }
 
+    /**
+     * Returns a list of {@link Book}
+     * @return List of {@link Book}
+     */
     @GetMapping
     public ResponseEntity<List<Book>> getAll() {
         return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
     }
 
+    /**
+     * Returns a specified book by the provided id
+     * @param id: Id of the book
+     * @return A {@link Book}
+     * @throws BookNotFoundException: When the book id that was passed doesn't belong to any book
+     */
     @GetMapping("{id}")
     public ResponseEntity<Book> get(@PathVariable int id) throws BookNotFoundException{
         return new ResponseEntity<>(bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(
                 ExceptionsConstants.BOOK_NOT_FOUND)), HttpStatus.OK);
     }
 
+    /**
+     * Creates a new {@link Book}
+     * @param book: Data structure with the fields to create the {@link Book}
+     * @return The created {@link Book} with the id assigned by the database
+     * @throws DatabaseException: When the save method throws an error coming from the database
+     */
     @PostMapping
     public ResponseEntity<Book> create(@RequestBody Book book) throws DatabaseException {
         try {
@@ -58,6 +72,15 @@ public class BookController {
 
     }
 
+    /**
+     * Updates a specified {@link Book} receiving the new information in the same structure
+     * @param id: Id of the book
+     * @param book: Data structure with the updated fields to update the {@link Book}
+     * @return The updated {@link Book}
+     * @throws BookNotFoundException: When the book id that was passed doesn't belong to any book
+     * @throws IdMismatchException: When the book id that was passed doesn't match the id that's in within the JSON
+     * @throws DatabaseException: When the save method throws an error coming from the database
+     */
     @PutMapping("{id}")
     public ResponseEntity<Book> update(@PathVariable int id, @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
         if(!bookRepository.existsById(id)) {
@@ -76,6 +99,12 @@ public class BookController {
 
     }
 
+    /**
+     * Deletes a specified {@link Book} by its id
+     * @param id: Id of the book
+     * @return An empty, No Content response
+     * @throws BookNotFoundException: When the book id that was passed doesn't belong to any book
+     */
     @DeleteMapping("{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) throws BookNotFoundException{
         if(!bookRepository.existsById(id)) {
