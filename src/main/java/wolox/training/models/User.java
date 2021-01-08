@@ -1,8 +1,11 @@
 package wolox.training.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -26,6 +29,7 @@ import wolox.training.exceptions.BookAlreadyOwnedException;
 @Table(name = "users")
 @ApiModel
 @JsonInclude(Include.NON_NULL)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 
 	@Id
@@ -56,6 +60,7 @@ public class User {
 			inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
 	)
 	@ApiModelProperty(notes = "Books: Books assigned to the user", required = true)
+	@JsonManagedReference
 	private List<Book> books = new ArrayList<>();
 
 	public int getId() {

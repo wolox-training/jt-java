@@ -1,12 +1,15 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +21,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "books")
 @ApiModel
 @JsonInclude(Include.NON_NULL)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Book {
 
 	@Id
@@ -68,7 +72,7 @@ public class Book {
 	@ApiModelProperty(notes = "ISBN: Book's unique ISBN", required = true)
 	private String isbn;
 
-	@ManyToMany(mappedBy = "books")
+	@ManyToMany(mappedBy = "books", fetch = FetchType.LAZY)
 	List<User> users;
 
 	public Book() {
