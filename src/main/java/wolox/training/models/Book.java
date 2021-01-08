@@ -1,5 +1,8 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import wolox.training.constants.PreconditionsConstants;
 
 @Entity
 @Table(name = "books")
@@ -113,7 +117,7 @@ public class Book {
 	}
 
 	public void setAuthor(String author) {
-		this.author = author;
+		this.author = checkNotNull(author, PreconditionsConstants.AUTHOR_CANT_BE_NULL);
 	}
 
 	public String getImage() {
@@ -121,7 +125,7 @@ public class Book {
 	}
 
 	public void setImage(String image) {
-		this.image = image;
+		this.image = checkNotNull(image, PreconditionsConstants.IMAGE_URL_CANT_BE_NULL);
 	}
 
 	public String getTitle() {
@@ -129,7 +133,7 @@ public class Book {
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = checkNotNull(title, PreconditionsConstants.TITLE_CANT_BE_NULL);
 	}
 
 	public String getSubtitle() {
@@ -137,7 +141,7 @@ public class Book {
 	}
 
 	public void setSubtitle(String subtitle) {
-		this.subtitle = subtitle;
+		this.subtitle = checkNotNull(subtitle, PreconditionsConstants.SUBTITLE_CANT_BE_NULL);
 	}
 
 	public String getPublisher() {
@@ -145,7 +149,7 @@ public class Book {
 	}
 
 	public void setPublisher(String publisher) {
-		this.publisher = publisher;
+		this.publisher = checkNotNull(publisher, PreconditionsConstants.PUBLISHER_CANT_BE_NULL);
 	}
 
 	public String getYear() {
@@ -153,7 +157,7 @@ public class Book {
 	}
 
 	public void setYear(String year) {
-		this.year = year;
+		this.year = checkNotNull(year, PreconditionsConstants.YEAR_CANT_BE_NULL);
 	}
 
 	public String getIsbn() {
@@ -161,7 +165,7 @@ public class Book {
 	}
 
 	public void setIsbn(String isbn) {
-		this.isbn = isbn;
+		this.isbn = checkNotNull(isbn, PreconditionsConstants.ISBN_CANT_BE_NULL);
 	}
 
 	public Integer getPages() {
@@ -169,6 +173,7 @@ public class Book {
 	}
 
 	public void setPages(Integer pages) {
+		checkArgument(pages > 0, PreconditionsConstants.PAGES_CANT_BE_0);
 		this.pages = pages;
 	}
 

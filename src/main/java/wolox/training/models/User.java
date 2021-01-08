@@ -1,5 +1,7 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,6 +25,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import wolox.training.constants.ExceptionsConstants;
+import wolox.training.constants.PreconditionsConstants;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 
 @Entity
@@ -76,7 +79,7 @@ public class User {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = checkNotNull(name, PreconditionsConstants.NAME_CANT_BE_NULL);
 	}
 
 	public LocalDate getBirthdate() {
@@ -84,7 +87,7 @@ public class User {
 	}
 
 	public void setBirthdate(LocalDate birthdate) {
-		this.birthdate = birthdate;
+		this.birthdate = checkNotNull(birthdate, PreconditionsConstants.BIRTHDAY_CANT_BE_NULL);
 	}
 
 	public String getUsername() {
@@ -92,7 +95,7 @@ public class User {
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		this.username = checkNotNull(username, PreconditionsConstants.USERNAME_CANT_BE_NULL);
 	}
 
 	public List<Book> getBooks() {
