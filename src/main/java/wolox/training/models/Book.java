@@ -152,20 +152,16 @@ public class Book {
 		this.year = year;
 	}
 
-	public int getPages() {
-		return pages;
-	}
-
-	public void setPages(int pages) {
-		this.pages = pages;
-	}
-
 	public String getIsbn() {
 		return isbn;
 	}
 
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
+	}
+
+	public Integer getPages() {
+		return pages;
 	}
 
 	public void setPages(Integer pages) {

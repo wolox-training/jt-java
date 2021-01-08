@@ -1,11 +1,13 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,7 +46,8 @@ public class User {
 	@NotNull(message = "User birthdate cannot be null")
 	@Column(nullable = false)
 	@ApiModelProperty(notes = "Birthdate: User's day of birth", required = true)
-	private Date birthdate;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private LocalDate birthdate;
 
 	@ManyToMany
 	@JoinTable(
@@ -53,7 +56,7 @@ public class User {
 			inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
 	)
 	@ApiModelProperty(notes = "Books: Books assigned to the user", required = true)
-	private List<Book> books;
+	private List<Book> books = new ArrayList<>();
 
 	public int getId() {
 		return id;
@@ -71,11 +74,11 @@ public class User {
 		this.name = name;
 	}
 
-	public Date getBirthdate() {
+	public LocalDate getBirthdate() {
 		return birthdate;
 	}
 
-	public void setBirthdate(Date birthdate) {
+	public void setBirthdate(LocalDate birthdate) {
 		this.birthdate = birthdate;
 	}
 
