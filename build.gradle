@@ -15,6 +15,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'junit:junit:4.12'
 	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 	compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
