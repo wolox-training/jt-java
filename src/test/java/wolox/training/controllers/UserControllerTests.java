@@ -193,7 +193,7 @@ class UserControllerTests {
 	void givenUserAndId_whenUpdateUser_thenReturnNotFoundException() throws Exception {
 		String userString = mapper.writeValueAsString(userToUpdate);
 
-		mvc.perform(put(apiURL + "/" + nonExistingUserId)
+		mvc.perform(put(apiURL + "/" + userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
 				.content(userString))
