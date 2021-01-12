@@ -85,12 +85,12 @@ public class BookController {
      */
     @PutMapping("{id}")
     public ResponseEntity<Book> update(@PathVariable int id,@Valid @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
-        if(!bookRepository.existsById(id)) {
-            throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
-        }
-
         if(book.getId() != id) {
             throw new IdMismatchException(ExceptionsConstants.ID_MISMATCH);
+        }
+
+        if(!bookRepository.existsById(id)) {
+            throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }
 
         try {
