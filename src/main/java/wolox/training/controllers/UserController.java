@@ -168,7 +168,8 @@ public class UserController {
 	public ResponseEntity<User> modifyBookList(
 			@ApiParam(value = "userId", type = "path", required = true, name = "userId", example = "1") @PathVariable int userId,
 			@ApiParam(value = "bookId", type = "path", required = true, name = "bookId", example = "1") @PathVariable int bookId,
-			@ApiParam(value = "action", type = "query", required = true, name = "action", example = "add")@NotNull @RequestParam String action)
+			@ApiParam(value = "action", type = "query", required = true, name = "action", example = "add")
+			@NotNull(message = ExceptionsConstants.MODIFY_BOOK_LIST_PARAMETHER_NOT_PRESENT) @RequestParam String action)
 			throws UserNotFoundException, BookNotFoundException, BookAlreadyOwnedException, ActionNotFoundException, DatabaseException {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(
 				ExceptionsConstants.USER_NOT_FOUND));

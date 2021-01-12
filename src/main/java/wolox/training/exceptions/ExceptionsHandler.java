@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -28,16 +29,24 @@ public class ExceptionsHandler {
 
 	@ExceptionHandler({
 			IdMismatchException.class,
-			DataIntegrityViolationException.class,
 			MethodArgumentNotValidException.class,
+			DatabaseException.class,
+			BookAlreadyOwnedException.class,
+			ActionNotFoundException.class,
+			MissingServletRequestParameterException.class
 	})
 	public ResponseEntity<?> DataIntegrityHandler(Exception e) {
 		ExceptionsResponse response = new ExceptionsResponse(e.getMessage());
 
-		if(e instanceof IdMismatchException) {
-			response.setOrigin("/books");
-		} else if(e instanceof MethodArgumentNotValidException) {
-			response.setError(Objects.requireNonNull(((MethodArgumentNotValidException) e).getBindingResult().getFieldError()).getDefaultMessage());
+		if(e instanceof MethodArgumentNotValidException) {
+			response.setError(Objects.requireNonNull(
+					((MethodArgumentNotValidException) e).getBindingResult().getFieldError())
+					.getDefaultMessage());
+		}
+
+		if(e instanceof MissingServletRequestParameterException) {
+			response.setError(Objects.requireNonNull(
+					e.getMessage()));
 		}
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
