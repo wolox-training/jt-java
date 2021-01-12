@@ -110,13 +110,14 @@ public class BookController {
     })
     public ResponseEntity<Book> update(
             @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id,
-            @ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody Book book) throws BookNotFoundException, IdMismatchException, DatabaseException {
-        if(!bookRepository.existsById(id)) {
-            throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
-        }
-
+            @ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody Book book)
+            throws BookNotFoundException, IdMismatchException, DatabaseException {
         if(book.getId() != id) {
             throw new IdMismatchException(ExceptionsConstants.ID_MISMATCH);
+        }
+
+        if(!bookRepository.existsById(id)) {
+            throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }
 
         try {
