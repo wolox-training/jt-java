@@ -69,7 +69,6 @@ public class User {
 			inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
 	)
 	@ApiModelProperty(notes = "Books: Books assigned to the user", required = true)
-	@JsonManagedReference
 	private List<Book> books = new ArrayList<>();
 
 	public int getId() {
