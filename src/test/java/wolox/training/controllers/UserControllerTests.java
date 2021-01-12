@@ -93,9 +93,9 @@ class UserControllerTest {
 
 	@Test
 	void givenUser_whenCreateUser_thenReturnUser() throws Exception {
-		// given method kept giving me empty body, switched to when an worked
-		String userString = mapper.writeValueAsString(user);
+		when(userRepository.save(any())).thenReturn(user);
 
+		String userString = mapper.writeValueAsString(user);
 
 		mvc.perform(post(apiURL)
 				.contentType(MediaType.APPLICATION_JSON)
