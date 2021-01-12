@@ -111,12 +111,12 @@ public class UserController {
 			@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id,
 			@ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody User user)
 			throws UserNotFoundException, IdMismatchException, DatabaseException {
-		if(!userRepository.existsById(id)) {
-			throw new UserNotFoundException(ExceptionsConstants.USER_NOT_FOUND);
-		}
-
 		if(user.getId() != id) {
 			throw new IdMismatchException(ExceptionsConstants.ID_MISMATCH);
+		}
+
+		if(!userRepository.existsById(id)) {
+			throw new UserNotFoundException(ExceptionsConstants.USER_NOT_FOUND);
 		}
 
 		try {
