@@ -4,18 +4,20 @@ import java.sql.Timestamp;
 
 public class ExceptionsResponse {
 
+	private String origin;
+	private Timestamp timestamp;
+	private String error;
+
 	public ExceptionsResponse(String error) {
 		this.error = error;
+		this.timestamp = new Timestamp(System.currentTimeMillis());
 	}
 
 	public ExceptionsResponse(String origin, String error) {
 		this.origin = origin;
 		this.error = error;
+		this.timestamp = new Timestamp(System.currentTimeMillis());
 	}
-
-	private String origin;
-	private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-	private String error;
 
 	public String getOrigin() {
 		return origin;
