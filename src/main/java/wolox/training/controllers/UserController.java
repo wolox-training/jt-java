@@ -83,12 +83,12 @@ public class UserController {
 	@PutMapping("{id}")
 	public ResponseEntity<User> update(@PathVariable int id,@Valid @RequestBody User user)
 			throws UserNotFoundException, IdMismatchException, DatabaseException {
-		if(!userRepository.existsById(id)) {
-			throw new UserNotFoundException(ExceptionsConstants.USER_NOT_FOUND);
-		}
-
 		if(user.getId() != id) {
 			throw new IdMismatchException(ExceptionsConstants.ID_MISMATCH);
+		}
+
+		if(!userRepository.existsById(id)) {
+			throw new UserNotFoundException(ExceptionsConstants.USER_NOT_FOUND);
 		}
 
 		try {
