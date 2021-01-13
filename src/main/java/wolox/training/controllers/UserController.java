@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,8 @@ public class UserController {
 	private UserRepository userRepository;
 	@Autowired
 	private BookRepository bookRepository;
+	@Autowired
+	private PasswordEncoder encoder;
 
 	/**
 	 * Returns a list of {@link User}
@@ -85,6 +88,7 @@ public class UserController {
 	})
 	public ResponseEntity<User> create(@ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody User user) throws DatabaseException {
 		try {
+			user.setPassword(encoder.encode(user.getPassword()));
 			return new ResponseEntity<>(userRepository.save(user), HttpStatus.CREATED);
 		} catch (Exception e) {
 			throw new DatabaseException(ExceptionsConstants.DATA_SAVE_INTEGRITY_VIOLATION);

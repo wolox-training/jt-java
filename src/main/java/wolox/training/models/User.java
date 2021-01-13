@@ -41,22 +41,27 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@ApiModelProperty(notes = "Id: Unique id, provided by the database")
+	@ApiModelProperty(notes = "Unique id, provided by the database")
 	private int id;
 
 	@NotNull(message = "User username cannot be null")
 	@Column(nullable = false)
-	@ApiModelProperty(notes = "Username: User's unique username", required = true)
+	@ApiModelProperty(notes = "User's unique username", required = true)
 	private String username;
 
 	@NotNull(message = "User name cannot be null")
 	@Column(nullable = false)
-	@ApiModelProperty(notes = "Name: User's name", required = true)
+	@ApiModelProperty(notes = "User's name", required = true)
 	private String name;
+
+	@NotNull(message = "User password cannot be null")
+	@Column(nullable = false)
+	@ApiModelProperty(notes = "User's password", required = true)
+	private String password;
 
 	@NotNull(message = "User birthdate cannot be null")
 	@Column(nullable = false)
-	@ApiModelProperty(notes = "Birthdate: User's day of birth", required = true)
+	@ApiModelProperty(notes = "User's day of birth", required = true)
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@JsonDeserialize(using = LocalDateDeserializer.class)
 	@JsonSerialize(using = LocalDateSerializer.class)
@@ -109,6 +114,14 @@ public class User {
 
 	public void setBooks(List<Book> books) {
 		this.books = books;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/**

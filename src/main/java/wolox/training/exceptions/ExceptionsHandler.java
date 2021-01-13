@@ -4,6 +4,7 @@ import java.util.Objects;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +17,7 @@ public class ExceptionsHandler {
 			BookNotFoundException.class,
 			UserNotFoundException.class
 	})
-	public ResponseEntity<?> BookNotFoundHandler(Exception e) {
+	public ResponseEntity<?> bookNotFoundHandler(Exception e) {
 		ExceptionsResponse response = new ExceptionsResponse(e.getMessage());
 
 		if (e instanceof BookNotFoundException) {
@@ -35,7 +36,7 @@ public class ExceptionsHandler {
 			ActionNotFoundException.class,
 			MissingServletRequestParameterException.class
 	})
-	public ResponseEntity<?> DataIntegrityHandler(Exception e) {
+	public ResponseEntity<?> dataIntegrityHandler(Exception e) {
 		ExceptionsResponse response = new ExceptionsResponse(e.getMessage());
 
 		if(e instanceof MethodArgumentNotValidException) {
@@ -50,4 +51,5 @@ public class ExceptionsHandler {
 		}
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
+
 }

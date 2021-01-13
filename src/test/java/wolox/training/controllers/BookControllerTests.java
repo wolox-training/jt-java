@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.exceptions.BookNotFoundException;
@@ -30,6 +31,7 @@ import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.security.CustomAuthenticationService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
@@ -40,10 +42,13 @@ class BookControllerTests {
 	
 	@MockBean
 	private BookRepository bookRepository;
+	@MockBean
+	private CustomAuthenticationService authenticationService;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	private final String apiURL = "/api/books";
+	private final String testUser = "testUser";
 	private final int bookId = 1;
 	private final int nonExistingBookId = 500;
 	private Book bookWithErrors;
@@ -93,6 +98,7 @@ class BookControllerTests {
 		this.bookToUpdate.setAuthor("Book author");
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void whenGetBooks_thenReturnJsonArray() throws Exception {
 		List<Book> books = Collections.singletonList(book);
@@ -104,6 +110,7 @@ class BookControllerTests {
 						assertEquals(mapper.writeValueAsString(books), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenId_whenGetBook_thenReturnBook() throws Exception {
 		given(bookRepository.findById(bookId)).willReturn(Optional.of(book));
@@ -114,6 +121,7 @@ class BookControllerTests {
 						assertEquals(mapper.writeValueAsString(book), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenBookAndId_whenGetBook_thenReturnBookNotFoundException() throws Exception {
 		given(bookRepository.findById(bookId)).willReturn(Optional.of(book));
@@ -154,6 +162,7 @@ class BookControllerTests {
 						assertTrue(result.getResolvedException() instanceof DatabaseException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnBook() throws Exception {
 		when(bookRepository.existsById(any())).thenReturn(true);
@@ -170,6 +179,7 @@ class BookControllerTests {
 						assertEquals(mapper.writeValueAsString(bookToUpdate), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnIdMismatchException() throws Exception {
 		when(bookRepository.existsById(any())).thenReturn(true);
@@ -185,6 +195,7 @@ class BookControllerTests {
 						assertTrue(result.getResolvedException() instanceof IdMismatchException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnNotFoundException() throws Exception {
 		String bookString = mapper.writeValueAsString(bookToUpdate);
@@ -198,6 +209,7 @@ class BookControllerTests {
 						assertTrue(result.getResolvedException() instanceof BookNotFoundException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnDatabaseException() throws Exception {
 		when(bookRepository.existsById(any())).thenReturn(true);
@@ -214,6 +226,7 @@ class BookControllerTests {
 						assertTrue(result.getResolvedException() instanceof DatabaseException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenBookId_whenDeleteBook_thenReturnNoContent() throws Exception {
 		when(bookRepository.existsById(any())).thenReturn(true);
@@ -222,6 +235,7 @@ class BookControllerTests {
 				.andExpect(status().isNoContent());
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenBookId_whenDeleteBook_thenReturnNoTFoundException() throws Exception {
 		mvc.perform(get(apiURL + "/" + nonExistingBookId))

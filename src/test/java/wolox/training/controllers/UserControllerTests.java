@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.exceptions.ActionNotFoundException;
@@ -52,6 +53,7 @@ class UserControllerTests {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	private final String apiURL = "/api/users";
+	private final String testUser = "testUser";
 	private final int userId = 5;
 	private final int nonExistingUserId = 500;
 	private final int bookId = 1;
@@ -72,17 +74,20 @@ class UserControllerTests {
 		this.user = new User();
 		this.user.setName("TestName");
 		this.user.setUsername("testUsername");
+		this.user.setPassword("testPassword");
 		this.user.setBirthdate(LocalDate.now());
 
 		this.userWithErrors = new User();
 		this.userWithErrors.setName("TestName");
 		this.userWithErrors.setUsername("testUsernameIsTooLong");
+		this.userWithErrors.setPassword("testPassword");
 		this.userWithErrors.setBirthdate(LocalDate.now());
 
 		this.userToUpdate = new User();
 		this.userToUpdate.setId(5);
 		this.userToUpdate.setName("TestName");
 		this.userToUpdate.setUsername("testUsername");
+		this.userToUpdate.setPassword("testPassword");
 		this.userToUpdate.setBirthdate(LocalDate.now());
 
 		book = new Book();
@@ -97,6 +102,7 @@ class UserControllerTests {
 		book.setAuthor("Book author");
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void whenGetUsers_thenReturnJsonArray() throws Exception {
 		List<User> users = Collections.singletonList(user);
@@ -108,6 +114,7 @@ class UserControllerTests {
 						assertEquals(mapper.writeValueAsString(users), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenId_whenGetUser_thenReturnUser() throws Exception {
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
@@ -118,6 +125,7 @@ class UserControllerTests {
 						assertEquals(mapper.writeValueAsString(user), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserAndId_whenGetUser_thenReturnUserNotFoundException() throws Exception {
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
@@ -158,6 +166,7 @@ class UserControllerTests {
 						assertTrue(result.getResolvedException() instanceof DatabaseException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnUser() throws Exception {
 		when(userRepository.existsById(any())).thenReturn(true);
@@ -174,6 +183,7 @@ class UserControllerTests {
 						assertEquals(mapper.writeValueAsString(userToUpdate), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnIdMismatchException() throws Exception {
 		when(userRepository.existsById(any())).thenReturn(true);
@@ -189,6 +199,7 @@ class UserControllerTests {
 						assertTrue(result.getResolvedException() instanceof IdMismatchException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnNotFoundException() throws Exception {
 		String userString = mapper.writeValueAsString(userToUpdate);
@@ -202,6 +213,7 @@ class UserControllerTests {
 						assertTrue(result.getResolvedException() instanceof UserNotFoundException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnDatabaseException() throws Exception {
 		when(userRepository.existsById(any())).thenReturn(true);
@@ -218,6 +230,7 @@ class UserControllerTests {
 						assertTrue(result.getResolvedException() instanceof DatabaseException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserId_whenDeleteUser_thenReturnNoContent() throws Exception {
 		when(userRepository.existsById(any())).thenReturn(true);
@@ -226,6 +239,7 @@ class UserControllerTests {
 				.andExpect(status().isNoContent());
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserId_whenDeleteUser_thenReturnNoTFoundException() throws Exception {
 		mvc.perform(get(apiURL + "/" + nonExistingUserId))
@@ -235,6 +249,7 @@ class UserControllerTests {
 
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserIdAndBookId_whenAddBookToUser_thenReturnUserWithBooks() throws Exception {
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
@@ -247,6 +262,7 @@ class UserControllerTests {
 						assertEquals(mapper.writeValueAsString(user), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserIdAndBookId_whenAddBookToUser_thenReturnBookAlreadyOwnedException() throws Exception {
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
@@ -261,6 +277,7 @@ class UserControllerTests {
 						assertTrue(result.getResolvedException() instanceof BookAlreadyOwnedException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserIdAndBookId_whenRemoveBookToUser_thenReturnUserWithBooks() throws Exception {
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
@@ -275,6 +292,7 @@ class UserControllerTests {
 						assertEquals(mapper.writeValueAsString(user), result.getResponse().getContentAsString()));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserIdAndBookId_whenModifyingBooks_thenReturnUserNotFoundException() throws Exception {
 		when(bookRepository.findById(any())).thenReturn(Optional.of(book));
@@ -285,6 +303,7 @@ class UserControllerTests {
 						assertTrue(result.getResolvedException() instanceof UserNotFoundException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserIdAndBookId_whenModifyingBooks_thenReturnBookNotFoundException() throws Exception {
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
@@ -295,6 +314,7 @@ class UserControllerTests {
 						assertTrue(result.getResolvedException() instanceof BookNotFoundException));
 	}
 
+	@WithMockUser(value = testUser)
 	@Test
 	void givenUserIdAndBookId_whenModifyingBooks_thenReturnActionNotFoundException() throws Exception {
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
