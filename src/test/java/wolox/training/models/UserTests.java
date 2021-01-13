@@ -31,6 +31,7 @@ class UserTests {
 		this.user = new User();
 		this.user.setName("TestName");
 		this.user.setUsername("testUsername");
+		this.user.setPassword("testPassword");
 		this.user.setBirthdate(LocalDate.now());
 
 	}
