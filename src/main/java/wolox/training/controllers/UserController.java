@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,7 +59,7 @@ public class UserController {
 	}
 
 	/**
-	 * Returns a specified book by the provided id
+	 * Returns a specified {@link User} by the provided id
 	 * @param id: Id of the {@link User}
 	 * @return A {@link User}
 	 * @throws UserNotFoundException: When the user id that was passed doesn't belong to any {@link User}
@@ -71,6 +72,18 @@ public class UserController {
 	})
 	public ResponseEntity<User> get(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws UserNotFoundException {
 		return new ResponseEntity<>(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(
+				ExceptionsConstants.USER_NOT_FOUND)), HttpStatus.OK);
+	}
+
+	/**
+	 * Return the {@link User} that's being authenticated
+	 * @param authentication: {@link Authentication} credentials of the {@link User}
+	 * @return Authenticated {@link User}
+	 */
+	@RequestMapping("me")
+	public ResponseEntity<User> getAuthenticatedUser(Authentication authentication)
+			throws UserNotFoundException {
+		return new ResponseEntity<>(userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UserNotFoundException(
 				ExceptionsConstants.USER_NOT_FOUND)), HttpStatus.OK);
 	}
 

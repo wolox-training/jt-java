@@ -127,13 +127,24 @@ class UserControllerTests {
 
 	@WithMockUser(value = testUser)
 	@Test
-	void givenUserAndId_whenGetUser_thenReturnUserNotFoundException() throws Exception {
+	void givenId_whenGetUser_thenReturnUserNotFoundException() throws Exception {
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
 		mvc.perform(get(apiURL + "/" + nonExistingUserId))
 				.andExpect(status().isNotFound())
 				.andExpect(result ->
 						assertTrue(result.getResolvedException() instanceof UserNotFoundException));
+	}
+
+	@WithMockUser(value = testUser)
+	@Test
+	void givenAuthentication_whenGetAutheser_thenReturnUser() throws Exception {
+		given(userRepository.findByUsername(any())).willReturn(Optional.of(user));
+
+		mvc.perform(get(apiURL + "/me"))
+				.andExpect(status().isOk())
+				.andExpect(result ->
+						assertEquals(mapper.writeValueAsString(user), result.getResponse().getContentAsString()));
 	}
 
 	@Test
