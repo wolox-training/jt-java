@@ -1,5 +1,6 @@
 package wolox.training.exceptions;
 
+import java.io.IOException;
 import java.util.Objects;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import wolox.training.constants.ExceptionsConstants;
 
 @ControllerAdvice
 public class ExceptionsHandler {
@@ -50,6 +52,15 @@ public class ExceptionsHandler {
 					e.getMessage()));
 		}
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler({
+			IOException.class
+	})
+	public ResponseEntity<?> internalErrorHandler(Exception e) {
+		ExceptionsResponse response = new ExceptionsResponse(ExceptionsConstants.EXTERNAL_API_CONSUMPTION_EXCEPTION);
+
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

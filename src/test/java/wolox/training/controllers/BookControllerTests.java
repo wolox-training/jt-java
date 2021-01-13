@@ -26,12 +26,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import wolox.training.dtos.BookDTO;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 import wolox.training.security.CustomAuthenticationService;
+import wolox.training.services.OpenLibraryService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
@@ -44,6 +46,8 @@ class BookControllerTests {
 	private BookRepository bookRepository;
 	@MockBean
 	private CustomAuthenticationService authenticationService;
+	@MockBean
+	private OpenLibraryService openLibraryService;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
@@ -244,4 +248,54 @@ class BookControllerTests {
 						assertTrue(result.getResolvedException() instanceof BookNotFoundException));
 
 	}
+
+	@WithMockUser(value = testUser)
+	@Test
+	void givenIsbn_whenGetBookByIsbn_thenReturnBook() throws Exception {
+		when(bookRepository.findByIsbn(any())).thenReturn(Optional.of(book));
+
+		mvc.perform(get(apiURL + "/isbn/" + book.getIsbn()))
+				.andExpect(status().isOk())
+				.andExpect(result ->
+						assertEquals(mapper.writeValueAsString(new BookDTO(book)), result.getResponse().getContentAsString()));
+	}
+
+	@WithMockUser(value = testUser)
+	@Test
+	void givenIsbn_whenGetBookByIsbn_thenReturnBookNotFoundException() throws Exception {
+		when(bookRepository.findByIsbn(any())).thenReturn(Optional.empty());
+		when(openLibraryService.searchBook(any())).thenThrow(BookNotFoundException.class);
+
+		mvc.perform(get(apiURL + "/isbn/" + book.getIsbn()))
+				.andExpect(status().isNotFound())
+				.andExpect(result ->
+						assertTrue(result.getResolvedException() instanceof BookNotFoundException));
+	}
+
+	@WithMockUser(value = testUser)
+	@Test
+	void givenIsbn_whenGetBookByIsbn_thenCreateAndReturnBook() throws Exception {
+		when(bookRepository.findByIsbn(any())).thenReturn(Optional.empty());
+		when(openLibraryService.searchBook(any())).thenReturn(new BookDTO(book));
+		when(bookRepository.save(any())).thenReturn(book);
+
+		mvc.perform(get(apiURL + "/isbn/" + book.getIsbn()))
+				.andExpect(status().isCreated())
+				.andExpect(result ->
+						assertEquals(mapper.writeValueAsString(new BookDTO(book)), result.getResponse().getContentAsString()));
+	}
+
+	@WithMockUser(value = testUser)
+	@Test
+	void givenIsbn_whenGetBookByIsbn_thenCreateAndReturnDatabaseException() throws Exception {
+		when(bookRepository.findByIsbn(any())).thenReturn(Optional.empty());
+		when(openLibraryService.searchBook(any())).thenReturn(new BookDTO(bookWithErrors));
+		when(bookRepository.save(any())).thenReturn(DatabaseException.class);
+
+		mvc.perform(get(apiURL + "/isbn/" + book.getIsbn()))
+				.andExpect(status().isBadRequest())
+				.andExpect(result ->
+						assertTrue(result.getResolvedException() instanceof DatabaseException));
+	}
+
 }

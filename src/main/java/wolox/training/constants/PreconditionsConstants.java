@@ -2,6 +2,9 @@ package wolox.training.constants;
 
 public final class PreconditionsConstants {
 
+	private PreconditionsConstants() {
+	}
+
 	///// User precondition messages
 	public static final String NAME_CANT_BE_NULL= "User name can't be null";
 	public static final String USERNAME_CANT_BE_NULL= "User username can't be null";

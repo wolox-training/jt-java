@@ -5,8 +5,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
 import java.util.List;
 
+import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,12 +25,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.constants.ExceptionsConstants;
+import wolox.training.dtos.BookDTO;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
 import wolox.training.models.Book;
 import wolox.training.models.User;
 import wolox.training.repositories.BookRepository;
+import wolox.training.services.OpenLibraryService;
 
 @RestController
 @RequestMapping(value = "api/books", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,6 +41,8 @@ public class BookController {
 
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private OpenLibraryService openLibraryService;
 
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
@@ -50,7 +56,11 @@ public class BookController {
      */
     @GetMapping
     @ApiOperation(value = "Returns a list of all books", response = Book.class, responseContainer = "List")
-    @ApiResponse(code = 200, message = "OK")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Unauthorized")
+    })
+
     public ResponseEntity<List<Book>> getAll() {
         return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
     }
@@ -65,11 +75,47 @@ public class BookController {
     @ApiOperation(value = "Returns a specified book", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 404, message = "Not Found")
     })
     public ResponseEntity<Book> get(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws BookNotFoundException{
         return new ResponseEntity<>(bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(
                 ExceptionsConstants.BOOK_NOT_FOUND)), HttpStatus.OK);
+    }
+
+    /**
+     * This method receives an ISBN to look for in the database and, if not found, looks for it in an external service
+     * @param isbn: : The {@link Book} ISBN thas going to be used to search the {@link Book}
+     * @return A {@link BookDTO} with the {@link Book}'s mapped data
+     * @throws BookNotFoundException: When the {@link Book} is not found in the database or in the external service
+     * @throws IOException: When an error occurs while communicating whit the external service
+     * @throws DatabaseException: When te retrieved data from the external service doesn't match the database constraints
+     */
+    @GetMapping("isbn/{isbn}")
+    @ApiOperation(value = "Returns a specified book", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 404, message = "Not Found")
+    })
+    public ResponseEntity<BookDTO> getByIsbn(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable String isbn)
+            throws BookNotFoundException, IOException, DatabaseException {
+        Optional<Book> book = bookRepository.findByIsbn(isbn);
+
+        if (book.isPresent()) {
+           return new ResponseEntity<>(new BookDTO(book.get()), HttpStatus.OK);
+        } else {
+            BookDTO bookDTO = openLibraryService.searchBook(isbn);
+
+            try {
+                bookRepository.save(new Book(bookDTO));
+            } catch (Exception e) {
+                throw new DatabaseException(ExceptionsConstants.DATA_SAVE_INTEGRITY_VIOLATION);
+            }
+
+            return new ResponseEntity<>(bookDTO, HttpStatus.CREATED);
+
+        }
     }
 
     /**
@@ -106,6 +152,7 @@ public class BookController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 404, message = "Not Found")
     })
     public ResponseEntity<Book> update(
@@ -137,6 +184,7 @@ public class BookController {
     @ApiOperation(value = "Deletes a specified user", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 404, message = "Not Found")
     })
     public ResponseEntity<Void> delete(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws BookNotFoundException{

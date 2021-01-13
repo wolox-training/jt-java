@@ -53,7 +53,10 @@ public class UserController {
 	 */
 	@GetMapping
 	@ApiOperation(value = "Returns a list of all users", response = User.class, responseContainer = "List")
-	@ApiResponse(code = 200, message = "OK")
+	@ApiResponses({
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 401, message = "Unauthorized")
+	})
 	public ResponseEntity<List<User>> getAll() {
 		return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
 	}
@@ -68,6 +71,7 @@ public class UserController {
 	@ApiOperation(value = "Returns a specified user", response = User.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
 			@ApiResponse(code = 404, message = "Not Found")
 	})
 	public ResponseEntity<User> get(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws UserNotFoundException {
@@ -81,6 +85,12 @@ public class UserController {
 	 * @return Authenticated {@link User}
 	 */
 	@RequestMapping("me")
+	@ApiOperation(value = "Returns the user data that's being authenticated")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Created"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 404, message = "Not Found")
+	})
 	public ResponseEntity<User> getAuthenticatedUser(Authentication authentication)
 			throws UserNotFoundException {
 		return new ResponseEntity<>(userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UserNotFoundException(
@@ -122,6 +132,7 @@ public class UserController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
 			@ApiResponse(code = 404, message = "Not Found")
 	})
 	public ResponseEntity<User> update(
@@ -153,6 +164,7 @@ public class UserController {
 	@ApiOperation(value = "Deletes a specified user", response = User.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 204, message = "No Content"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
 			@ApiResponse(code = 404, message = "Not Found")
 	})
 	public ResponseEntity<Void> delete(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws UserNotFoundException {
@@ -180,6 +192,7 @@ public class UserController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
 			@ApiResponse(code = 404, message = "Not Found")
 	})
 	public ResponseEntity<User> modifyBookList(

@@ -20,6 +20,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import wolox.training.constants.PreconditionsConstants;
+import wolox.training.dtos.BookDTO;
 
 @Entity
 @Table(name = "books")
@@ -82,18 +83,15 @@ public class Book {
 	public Book() {
 	}
 
-	public Book(int id, String genre, String author, String image, String title,
-			String subtitle, String publisher, String year, int pages, String isbn) {
-		this.id = id;
-		this.genre = genre;
-		this.author = author;
-		this.image = image;
-		this.title = title;
-		this.subtitle = subtitle;
-		this.publisher = publisher;
-		this.year = year;
-		this.pages = pages;
-		this.isbn = isbn;
+	public Book(BookDTO bookDTO) {
+		this.isbn = bookDTO.getIsbn();
+		this.year = bookDTO.getPublishDate();
+		this.title = bookDTO.getTitle();
+		this.subtitle = bookDTO.getSubtitle();
+		this.pages = bookDTO.getPages();
+		this.image = bookDTO.getImageUrl();
+		this.author = bookDTO.getAuthors().get(0);
+		this.publisher = bookDTO.getPublishers().get(0);
 	}
 
 	public int getId() {
