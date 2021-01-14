@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.time.LocalDate;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -59,6 +60,30 @@ public class UserController {
 	})
 	public ResponseEntity<List<User>> getAll() {
 		return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+	}
+
+	/**
+	 * Return a list of {@link User} that matches the provided parameters
+	 * @param charSequence: Sequence of characters to search using a Regexp
+	 * @param begin: Beginning date to search in a range of dates
+	 * @param end: Ending date to search in a range of dates
+	 * @return List of {@link User}
+	 */
+	@GetMapping("search")
+	@ApiOperation(value = "Returns a list of all users that matches the search parameters", response = User.class, responseContainer = "List")
+	@ApiResponses({
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 401, message = "Unauthorized")
+	})
+	public ResponseEntity<List<User>> search(
+			@ApiParam(value = "Sequence of characters", type = "query", required = true, name = "charSequence", example = "test")
+			@RequestParam String charSequence,
+			@ApiParam(value = "Beginning date", type = "query", required = true, name = "begin", example = "2000-01-01")
+			@RequestParam String begin,
+			@ApiParam(value = "Ending date", type = "query", required = true, name = "begin", example = "2000-01-01")
+			@RequestParam String end) {
+		return new ResponseEntity<>(
+				userRepository.findAllBirthdateBetweenAndNameLike(charSequence, LocalDate.parse(begin), LocalDate.parse(end)), HttpStatus.OK);
 	}
 
 	/**

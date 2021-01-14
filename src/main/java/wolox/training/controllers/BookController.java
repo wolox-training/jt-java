@@ -10,6 +10,7 @@ import java.util.List;
 
 import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,9 +61,32 @@ public class BookController {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Unauthorized")
     })
-
     public ResponseEntity<List<Book>> getAll() {
         return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
+    }
+
+    /**
+     * Return a list of {@link Book} that matches the provided parameters
+     * @param publisher: {@link Book}'s publisher
+     * @param year: {@link Book}'s year of publication
+     * @param genre: {@link Book}'s genre
+     * @return List of {@link Book}
+     */
+    @GetMapping("search")
+    @ApiOperation(value = "Returns a list of all books", response = Book.class, responseContainer = "List")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "Unauthorized")
+    })
+    public ResponseEntity<List<Book>> search(
+            @ApiParam(value = "Book's publisher house", type = "query", required = true, name = "publisher", example = "testPublisher")
+            @NotNull(message = ExceptionsConstants.PUBLISHER_SEARCH_PARAMETER_NOT_PRESENT) @RequestParam String publisher,
+            @ApiParam(value = "Book's publication year", type = "query", required = true, name = "year", example = "1999")
+            @NotNull(message = ExceptionsConstants.YEAR_SEARCH_PARAMETER_NOT_PRESENT) @RequestParam String year,
+            @ApiParam(value = "Book's genre", type = "query", required = false, name = "genre", example = "Fantasy")
+            @RequestParam String genre) {
+        return new ResponseEntity<>(bookRepository.findAllByPublisherAndYearAndGenre(publisher, year, genre), HttpStatus.OK);
     }
 
     /**
@@ -72,7 +96,7 @@ public class BookController {
      * @throws BookNotFoundException: When the book id that was passed doesn't belong to any {@link Book}
      */
     @GetMapping("{id}")
-    @ApiOperation(value = "Returns a specified book", response = User.class)
+    @ApiOperation(value = "Returns a specified book", response = Book.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Unauthorized"),
@@ -92,7 +116,7 @@ public class BookController {
      * @throws DatabaseException: When te retrieved data from the external service doesn't match the database constraints
      */
     @GetMapping("isbn/{isbn}")
-    @ApiOperation(value = "Returns a specified book", response = User.class)
+    @ApiOperation(value = "Returns a specified book", response = BookDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Unauthorized"),
@@ -125,7 +149,7 @@ public class BookController {
      * @throws DatabaseException: When the save method throws an error coming from the database
      */
     @PostMapping
-    @ApiOperation(value = "Creates a book", response = User.class)
+    @ApiOperation(value = "Creates a book", response = Book.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created"),
             @ApiResponse(code = 400, message = "Bad Request")
@@ -148,7 +172,7 @@ public class BookController {
      * @throws DatabaseException: When the save method throws an error coming from the database
      */
     @PutMapping("{id}")
-    @ApiOperation(value = "Updates a specified book", response = User.class)
+    @ApiOperation(value = "Updates a specified book", response = Book.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
@@ -181,7 +205,7 @@ public class BookController {
      * @throws BookNotFoundException: When the book id that was passed doesn't belong to any book
      */
     @DeleteMapping("{id}")
-    @ApiOperation(value = "Deletes a specified user", response = User.class)
+    @ApiOperation(value = "Deletes a specified book")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content"),
             @ApiResponse(code = 401, message = "Unauthorized"),
