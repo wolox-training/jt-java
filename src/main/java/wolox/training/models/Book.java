@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.google.common.base.Strings;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
@@ -115,7 +116,8 @@ public class Book {
 	}
 
 	public void setAuthor(String author) {
-		this.author = checkNotNull(author, PreconditionsConstants.AUTHOR_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(author), PreconditionsConstants.AUTHOR_CANT_BE_NULL);
+		this.author = author;
 	}
 
 	public String getImage() {
@@ -123,7 +125,8 @@ public class Book {
 	}
 
 	public void setImage(String image) {
-		this.image = checkNotNull(image, PreconditionsConstants.IMAGE_URL_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(image), PreconditionsConstants.IMAGE_URL_CANT_BE_NULL);
+		this.image = image;
 	}
 
 	public String getTitle() {
@@ -131,7 +134,8 @@ public class Book {
 	}
 
 	public void setTitle(String title) {
-		this.title = checkNotNull(title, PreconditionsConstants.TITLE_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(title), PreconditionsConstants.TITLE_CANT_BE_NULL);
+		this.title = title;
 	}
 
 	public String getSubtitle() {
@@ -139,7 +143,8 @@ public class Book {
 	}
 
 	public void setSubtitle(String subtitle) {
-		this.subtitle = checkNotNull(subtitle, PreconditionsConstants.SUBTITLE_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(subtitle), PreconditionsConstants.SUBTITLE_CANT_BE_NULL);
+		this.subtitle = subtitle;
 	}
 
 	public String getPublisher() {
@@ -147,7 +152,8 @@ public class Book {
 	}
 
 	public void setPublisher(String publisher) {
-		this.publisher = checkNotNull(publisher, PreconditionsConstants.PUBLISHER_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(publisher), PreconditionsConstants.PUBLISHER_CANT_BE_NULL);
+		this.publisher = publisher;
 	}
 
 	public String getYear() {
@@ -155,7 +161,8 @@ public class Book {
 	}
 
 	public void setYear(String year) {
-		this.year = checkNotNull(year, PreconditionsConstants.YEAR_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(year), PreconditionsConstants.YEAR_CANT_BE_NULL);
+		this.year = year;
 	}
 
 	public String getIsbn() {
@@ -163,7 +170,8 @@ public class Book {
 	}
 
 	public void setIsbn(String isbn) {
-		this.isbn = checkNotNull(isbn, PreconditionsConstants.ISBN_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(isbn), PreconditionsConstants.ISBN_CANT_BE_NULL);
+		this.isbn = isbn;
 	}
 
 	public Integer getPages() {

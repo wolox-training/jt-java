@@ -78,7 +78,9 @@ public class BookController {
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 404, message = "Not Found")
     })
-    public ResponseEntity<Book> get(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws BookNotFoundException{
+    public ResponseEntity<Book> get(
+            @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id)
+            throws BookNotFoundException{
         return new ResponseEntity<>(bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(
                 ExceptionsConstants.BOOK_NOT_FOUND)), HttpStatus.OK);
     }
@@ -130,7 +132,9 @@ public class BookController {
             @ApiResponse(code = 201, message = "Created"),
             @ApiResponse(code = 400, message = "Bad Request")
     })
-    public ResponseEntity<Book> create(@ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody Book book) throws DatabaseException {
+    public ResponseEntity<Book> create(
+            @ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody Book book)
+            throws DatabaseException {
         try {
             return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -187,7 +191,9 @@ public class BookController {
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 404, message = "Not Found")
     })
-    public ResponseEntity<Void> delete(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws BookNotFoundException{
+    public ResponseEntity<Void> delete(
+            @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id)
+            throws BookNotFoundException{
         if(!bookRepository.existsById(id)) {
             throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }
