@@ -55,6 +55,10 @@ public class UserController {
 	 */
 	@GetMapping
 	@ApiOperation(value = "Returns a list of all users", response = User.class, responseContainer = "List")
+	@ApiResponses({
+			@ApiResponse(code = 200, message = SwaggerConstants.OK),
+			@ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED)
+	})
 	@ApiResponse(code = 200, message = SwaggerConstants.OK)
 	public ResponseEntity<List<User>> getAll() {
 		return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
@@ -70,6 +74,7 @@ public class UserController {
 	@ApiOperation(value = "Returns a specified user", response = User.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = SwaggerConstants.OK),
+			@ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
 			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
 	public ResponseEntity<User> get(
@@ -85,6 +90,8 @@ public class UserController {
 	 * @return Authenticated {@link User}
 	 */
 	@RequestMapping("me")
+	@ApiOperation(value = "Returns current authenticated user", response = User.class)
+	@ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED)
 	public ResponseEntity<User> getAuthenticatedUser(Authentication authentication)
 			throws UserNotFoundException {
 		return new ResponseEntity<>(userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UserNotFoundException(
@@ -128,6 +135,7 @@ public class UserController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = SwaggerConstants.OK),
 			@ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST),
+			@ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
 			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
 	public ResponseEntity<User> update(
@@ -159,6 +167,7 @@ public class UserController {
 	@ApiOperation(value = "Deletes a specified user", response = User.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 204, message = SwaggerConstants.NO_CONTENT),
+			@ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
 			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
 	public ResponseEntity<Void> delete(
@@ -188,6 +197,7 @@ public class UserController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = SwaggerConstants.OK),
 			@ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST),
+			@ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
 			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
 	public ResponseEntity<User> modifyBookList(

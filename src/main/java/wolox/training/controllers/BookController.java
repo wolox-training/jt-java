@@ -51,7 +51,11 @@ public class BookController {
      */
     @GetMapping
     @ApiOperation(value = "Returns a list of all books", response = Book.class, responseContainer = "List")
-    @ApiResponse(code = 200, message = SwaggerConstants.OK)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED)
+    })
+
     public ResponseEntity<List<Book>> getAll() {
         return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
     }
@@ -66,6 +70,7 @@ public class BookController {
     @ApiOperation(value = "Returns a specified book", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
             @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<Book> get(
@@ -111,6 +116,7 @@ public class BookController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = SwaggerConstants.OK),
             @ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
             @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<Book> update(
@@ -142,6 +148,7 @@ public class BookController {
     @ApiOperation(value = "Deletes a specified user", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = SwaggerConstants.NO_CONTENT),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
             @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<Void> delete(
