@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
+import wolox.training.constants.TestsConstants;
+import wolox.training.factories.UserTestFactory;
 import wolox.training.repositories.UserRepository;
 
 @RunWith(SpringRunner.class)
@@ -27,13 +29,7 @@ class UserTests {
 
 	@BeforeEach
 	public void init() {
-
-		this.user = new User();
-		this.user.setName("TestName");
-		this.user.setUsername("testUsername");
-		this.user.setPassword("testPassword");
-		this.user.setBirthdate(LocalDate.now());
-
+		this.user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 	}
 
 	@Test
@@ -49,7 +45,7 @@ class UserTests {
 
 	@Test
 	void givenUser_whenCreate_thenPreconditionsException() {
-		assertThrows(NullPointerException.class, () -> user.setUsername(null));
+		assertThrows(IllegalArgumentException.class, () -> user.setUsername(null));
 	}
 
 }

@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.constants.ExceptionsConstants;
+import wolox.training.constants.SwaggerConstants;
+import wolox.training.enums.ActionsEnum;
 import wolox.training.exceptions.ActionNotFoundException;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotFoundException;
@@ -52,7 +54,7 @@ public class UserController {
 	 */
 	@GetMapping
 	@ApiOperation(value = "Returns a list of all users", response = User.class, responseContainer = "List")
-	@ApiResponse(code = 200, message = "OK")
+	@ApiResponse(code = 200, message = SwaggerConstants.OK)
 	public ResponseEntity<List<User>> getAll() {
 		return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
 	}
@@ -66,10 +68,12 @@ public class UserController {
 	@GetMapping("{id}")
 	@ApiOperation(value = "Returns a specified user", response = User.class)
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 404, message = "Not Found")
+			@ApiResponse(code = 200, message = SwaggerConstants.OK),
+			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
-	public ResponseEntity<User> get(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws UserNotFoundException {
+	public ResponseEntity<User> get(
+			@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) 
+			throws UserNotFoundException {
 		return new ResponseEntity<>(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(
 				ExceptionsConstants.USER_NOT_FOUND)), HttpStatus.OK);
 	}
@@ -83,10 +87,12 @@ public class UserController {
 	@PostMapping
 	@ApiOperation(value = "Creates an user", response = User.class)
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Created"),
-			@ApiResponse(code = 400, message = "Bad Request")
+			@ApiResponse(code = 201, message = SwaggerConstants.CREATED),
+			@ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST)
 	})
-	public ResponseEntity<User> create(@ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody User user) throws DatabaseException {
+	public ResponseEntity<User> create(
+			@ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody User user)
+			throws DatabaseException {
 		try {
 			user.setPassword(encoder.encode(user.getPassword()));
 			return new ResponseEntity<>(userRepository.save(user), HttpStatus.CREATED);
@@ -107,9 +113,9 @@ public class UserController {
 	@PutMapping("{id}")
 	@ApiOperation(value = "Updates a specified user", response = User.class)
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 400, message = "Bad Request"),
-			@ApiResponse(code = 404, message = "Not Found")
+			@ApiResponse(code = 200, message = SwaggerConstants.OK),
+			@ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST),
+			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
 	public ResponseEntity<User> update(
 			@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id,
@@ -140,9 +146,11 @@ public class UserController {
 	@ApiOperation(value = "Deletes a specified user", response = User.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 404, message = "Not Found")
+			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
-	public ResponseEntity<Void> delete(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws UserNotFoundException {
+	public ResponseEntity<Void> delete(
+			@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id)
+			throws UserNotFoundException {
 		if(!userRepository.existsById(id)) {
 			throw new UserNotFoundException(ExceptionsConstants.USER_NOT_FOUND);
 		}
@@ -165,9 +173,9 @@ public class UserController {
 	@PutMapping("{userId}/books/{bookId}")
 	@ApiOperation(value = "Adds or removes a book", response = User.class)
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 400, message = "Bad Request"),
-			@ApiResponse(code = 404, message = "Not Found")
+			@ApiResponse(code = 200, message = SwaggerConstants.OK),
+			@ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST),
+			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
 	public ResponseEntity<User> modifyBookList(
 			@ApiParam(value = "userId", type = "path", required = true, name = "userId", example = "1") @PathVariable int userId,
@@ -180,9 +188,9 @@ public class UserController {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(
 				ExceptionsConstants.BOOK_NOT_FOUND));
 
-		if(action.equals("add")) {
+		if(action.equalsIgnoreCase(ActionsEnum.ADD.name())) {
 			user.addBook(book);
-		} else if (action.equals("remove")) {
+		} else if (action.equalsIgnoreCase(ActionsEnum.REMOVE.name())) {
 			user.removeBook(book);
 		} else throw new ActionNotFoundException(ExceptionsConstants.ACTION_NOT_FOUND);
 
