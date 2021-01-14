@@ -1,17 +1,18 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.google.common.base.Strings;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -23,8 +24,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -68,13 +67,8 @@ public class User {
 	private LocalDate birthdate;
 
 	@ManyToMany
-	@JoinTable(
-			name = "user_book",
-			joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
-	)
 	@ApiModelProperty(notes = "Books: Books assigned to the user", required = true)
-	private List<Book> books = new ArrayList<>();
+	private List<Book> books;
 
 	public int getId() {
 		return id;
@@ -89,7 +83,8 @@ public class User {
 	}
 
 	public void setName(String name) {
-		this.name = checkNotNull(name, PreconditionsConstants.NAME_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(name), PreconditionsConstants.NAME_CANT_BE_NULL);
+		this.name = name;
 	}
 
 	public LocalDate getBirthdate() {
@@ -105,11 +100,12 @@ public class User {
 	}
 
 	public void setUsername(String username) {
-		this.username = checkNotNull(username, PreconditionsConstants.USERNAME_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(username), PreconditionsConstants.USERNAME_CANT_BE_NULL);
+		this.username = username;
 	}
 
 	public List<Book> getBooks() {
-		return Collections.unmodifiableList(books);
+		return books != null ? Collections.unmodifiableList(books) : Collections.unmodifiableList(new ArrayList<>());
 	}
 
 	public void setBooks(List<Book> books) {
@@ -130,6 +126,9 @@ public class User {
 	 * @throws BookAlreadyOwnedException: When the book that's being added already is owned by the user
 	 */
 	public void addBook(Book book) throws BookAlreadyOwnedException {
+		if (books == null) {
+			books = new ArrayList<>();
+		}
 		if (books.contains(book)) {
 			throw new BookAlreadyOwnedException(String.format(ExceptionsConstants.BOOK_ALREADY_OWNED, id, book.getId()));
 		}
