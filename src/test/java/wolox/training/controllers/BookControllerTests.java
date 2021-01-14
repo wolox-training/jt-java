@@ -25,9 +25,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import wolox.training.constants.TestsConstants;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
+import wolox.training.factories.BookTestFactory;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 
@@ -46,55 +48,15 @@ class BookControllerTests {
 	private final String apiURL = "/api/books";
 	private final int bookId = 1;
 	private final int nonExistingBookId = 500;
-	private Book bookWithErrors;
-	private Book bookToUpdate;
-	private Book book;
 
 	@BeforeEach
 	public void setUp() {
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 	}
 
-	@BeforeEach
-	public void init() {
-
-		this.book = new Book();
-		this.book.setImage("http://someurl.com");
-		this.book.setGenre("Book genre");
-		this.book.setPages(500);
-		this.book.setPublisher("Some publisher");
-		this.book.setTitle("Book title");
-		this.book.setSubtitle("Book subtitle");
-		this.book.setYear("2000");
-		this.book.setIsbn("Some isbn");
-		this.book.setAuthor("Book author");
-
-		this.bookWithErrors = new Book();
-		this.bookWithErrors.setImage("http://someurl.com");
-		this.bookWithErrors.setGenre("Book genre");
-		this.bookWithErrors.setPages(500);
-		this.bookWithErrors.setPublisher("Some publisher");
-		this.bookWithErrors.setTitle("Book title");
-		this.bookWithErrors.setSubtitle("Book subtitle with a really long name");
-		this.bookWithErrors.setYear("20000");
-		this.bookWithErrors.setIsbn("Some isbn");
-		this.bookWithErrors.setAuthor("Book author");
-
-		this.bookToUpdate = new Book();
-		this.bookToUpdate.setId(1);
-		this.bookToUpdate.setImage("http://someurl.com");
-		this.bookToUpdate.setGenre("Book genre");
-		this.bookToUpdate.setPages(1);
-		this.bookToUpdate.setPublisher("Some publisher");
-		this.bookToUpdate.setTitle("Book title");
-		this.bookToUpdate.setSubtitle("Book subtitle");
-		this.bookToUpdate.setYear("2000");
-		this.bookToUpdate.setIsbn("Some isbn");
-		this.bookToUpdate.setAuthor("Book author");
-	}
-
 	@Test
 	void whenGetBooks_thenReturnJsonArray() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		List<Book> books = Collections.singletonList(book);
 		given(bookRepository.findAll()).willReturn(books);
 
@@ -106,6 +68,7 @@ class BookControllerTests {
 
 	@Test
 	void givenId_whenGetBook_thenReturnBook() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		given(bookRepository.findById(bookId)).willReturn(Optional.of(book));
 
 		mvc.perform(get(apiURL + "/" + bookId))
@@ -116,6 +79,7 @@ class BookControllerTests {
 
 	@Test
 	void givenBookAndId_whenGetBook_thenReturnBookNotFoundException() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		given(bookRepository.findById(bookId)).willReturn(Optional.of(book));
 
 		mvc.perform(get(apiURL + "/" + nonExistingBookId))
@@ -126,6 +90,7 @@ class BookControllerTests {
 
 	@Test
 	void givenBook_whenCreateBook_thenReturnBook() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(bookRepository.save(any())).thenReturn(book);
 
 		String bookString = mapper.writeValueAsString(book);
@@ -141,9 +106,10 @@ class BookControllerTests {
 
 	@Test
 	void givenBook_whenCreateBook_thenReturnDatabaseException() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.ERROR_FACTORY_REQUEST);
 		when(bookRepository.save(any())).thenReturn(DatabaseException.class);
 
-		String bookString = mapper.writeValueAsString(bookWithErrors);
+		String bookString = mapper.writeValueAsString(book);
 
 		mvc.perform(post(apiURL)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -156,10 +122,11 @@ class BookControllerTests {
 
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnBook() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.UPDATE_FACTORY_REQUEST);
 		when(bookRepository.existsById(any())).thenReturn(true);
-		when(bookRepository.save(any())).thenReturn(bookToUpdate);
+		when(bookRepository.save(any())).thenReturn(book);
 
-		String bookString = mapper.writeValueAsString(bookToUpdate);
+		String bookString = mapper.writeValueAsString(book);
 
 		mvc.perform(put(apiURL + "/" + bookId)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -167,14 +134,15 @@ class BookControllerTests {
 				.content(bookString))
 				.andExpect(status().isOk())
 				.andExpect(result ->
-						assertEquals(mapper.writeValueAsString(bookToUpdate), result.getResponse().getContentAsString()));
+						assertEquals(mapper.writeValueAsString(book), result.getResponse().getContentAsString()));
 	}
 
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnIdMismatchException() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.UPDATE_FACTORY_REQUEST);
 		when(bookRepository.existsById(any())).thenReturn(true);
 
-		String bookString = mapper.writeValueAsString(bookToUpdate);
+		String bookString = mapper.writeValueAsString(book);
 
 		mvc.perform(put(apiURL + "/" + 9)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -187,7 +155,8 @@ class BookControllerTests {
 
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnNotFoundException() throws Exception {
-		String bookString = mapper.writeValueAsString(bookToUpdate);
+		Book book = BookTestFactory.getBook(TestsConstants.UPDATE_FACTORY_REQUEST);
+		String bookString = mapper.writeValueAsString(book);
 
 		mvc.perform(put(apiURL + "/" + bookId)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -200,10 +169,11 @@ class BookControllerTests {
 
 	@Test
 	void givenBookAndId_whenUpdateBook_thenReturnDatabaseException() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.UPDATE_FACTORY_REQUEST);
 		when(bookRepository.existsById(any())).thenReturn(true);
 		when(bookRepository.save(any())).thenReturn(DatabaseException.class);
 
-		String bookString = mapper.writeValueAsString(bookToUpdate);
+		String bookString = mapper.writeValueAsString(book);
 
 		mvc.perform(put(apiURL + "/" + bookId)
 				.contentType(MediaType.APPLICATION_JSON)

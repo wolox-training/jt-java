@@ -26,12 +26,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import wolox.training.constants.TestsConstants;
 import wolox.training.exceptions.ActionNotFoundException;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
 import wolox.training.exceptions.UserNotFoundException;
+import wolox.training.factories.BookTestFactory;
+import wolox.training.factories.UserTestFactory;
 import wolox.training.models.Book;
 import wolox.training.models.User;
 import wolox.training.repositories.BookRepository;
@@ -56,49 +59,15 @@ class UserControllerTests {
 	private final int nonExistingUserId = 500;
 	private final int bookId = 1;
 	private final int nonExistingBookId = 500;
-	private User user;
-	private User userWithErrors;
-	private User userToUpdate;
-	private Book book;
 
 	@BeforeEach
 	public void setUp() {
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 	}
 
-	@BeforeEach
-	public void init() {
-
-		this.user = new User();
-		this.user.setName("TestName");
-		this.user.setUsername("testUsername");
-		this.user.setBirthdate(LocalDate.now());
-
-		this.userWithErrors = new User();
-		this.userWithErrors.setName("TestName");
-		this.userWithErrors.setUsername("testUsernameIsTooLong");
-		this.userWithErrors.setBirthdate(LocalDate.now());
-
-		this.userToUpdate = new User();
-		this.userToUpdate.setId(5);
-		this.userToUpdate.setName("TestName");
-		this.userToUpdate.setUsername("testUsername");
-		this.userToUpdate.setBirthdate(LocalDate.now());
-
-		book = new Book();
-		book.setImage("http://someurl.com");
-		book.setGenre("Book genre");
-		book.setPages(500);
-		book.setPublisher("Some publisher");
-		book.setTitle("Book title");
-		book.setSubtitle("Book subtitle");
-		book.setYear("2000");
-		book.setIsbn("Some isbn");
-		book.setAuthor("Book author");
-	}
-
 	@Test
 	void whenGetUsers_thenReturnJsonArray() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		List<User> users = Collections.singletonList(user);
 		given(userRepository.findAll()).willReturn(users);
 
@@ -110,6 +79,7 @@ class UserControllerTests {
 
 	@Test
 	void givenId_whenGetUser_thenReturnUser() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
 		mvc.perform(get(apiURL + "/" + userId))
@@ -120,6 +90,7 @@ class UserControllerTests {
 
 	@Test
 	void givenUserAndId_whenGetUser_thenReturnUserNotFoundException() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
 		mvc.perform(get(apiURL + "/" + nonExistingUserId))
@@ -130,6 +101,7 @@ class UserControllerTests {
 
 	@Test
 	void givenUser_whenCreateUser_thenReturnUser() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(userRepository.save(any())).thenReturn(user);
 
 		String userString = mapper.writeValueAsString(user);
@@ -145,9 +117,10 @@ class UserControllerTests {
 
 	@Test
 	void givenUser_whenCreateUser_thenReturnDatabaseException() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.ERROR_FACTORY_REQUEST);
 		when(userRepository.save(any())).thenReturn(DatabaseException.class);
 
-		String userString = mapper.writeValueAsString(userWithErrors);
+		String userString = mapper.writeValueAsString(user);
 
 		mvc.perform(post(apiURL)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -160,10 +133,11 @@ class UserControllerTests {
 
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnUser() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.UPDATE_FACTORY_REQUEST);
 		when(userRepository.existsById(any())).thenReturn(true);
-		when(userRepository.save(any())).thenReturn(userToUpdate);
+		when(userRepository.save(any())).thenReturn(user);
 
-		String userString = mapper.writeValueAsString(userToUpdate);
+		String userString = mapper.writeValueAsString(user);
 
 		mvc.perform(put(apiURL + "/" + userId)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -171,14 +145,15 @@ class UserControllerTests {
 				.content(userString))
 				.andExpect(status().isOk())
 				.andExpect(result ->
-						assertEquals(mapper.writeValueAsString(userToUpdate), result.getResponse().getContentAsString()));
+						assertEquals(mapper.writeValueAsString(user), result.getResponse().getContentAsString()));
 	}
 
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnIdMismatchException() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.UPDATE_FACTORY_REQUEST);
 		when(userRepository.existsById(any())).thenReturn(true);
 
-		String userString = mapper.writeValueAsString(userToUpdate);
+		String userString = mapper.writeValueAsString(user);
 
 		mvc.perform(put(apiURL + "/" + 9)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -191,7 +166,8 @@ class UserControllerTests {
 
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnNotFoundException() throws Exception {
-		String userString = mapper.writeValueAsString(userToUpdate);
+		User user = UserTestFactory.getUser(TestsConstants.UPDATE_FACTORY_REQUEST);
+		String userString = mapper.writeValueAsString(user);
 
 		mvc.perform(put(apiURL + "/" + userId)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -204,10 +180,11 @@ class UserControllerTests {
 
 	@Test
 	void givenUserAndId_whenUpdateUser_thenReturnDatabaseException() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.UPDATE_FACTORY_REQUEST);
 		when(userRepository.existsById(any())).thenReturn(true);
 		when(userRepository.save(any())).thenReturn(DatabaseException.class);
 
-		String userString = mapper.writeValueAsString(userToUpdate);
+		String userString = mapper.writeValueAsString(user);
 
 		mvc.perform(put(apiURL + "/" + userId)
 				.contentType(MediaType.APPLICATION_JSON)
@@ -237,6 +214,8 @@ class UserControllerTests {
 
 	@Test
 	void givenUserIdAndBookId_whenAddBookToUser_thenReturnUserWithBooks() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
 		when(bookRepository.findById(any())).thenReturn(Optional.of(book));
 		when(userRepository.save(any())).thenReturn(user);
@@ -249,6 +228,8 @@ class UserControllerTests {
 
 	@Test
 	void givenUserIdAndBookId_whenAddBookToUser_thenReturnBookAlreadyOwnedException() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
 		when(bookRepository.findById(any())).thenReturn(Optional.of(book));
 		when(userRepository.save(any())).thenReturn(user);
@@ -263,6 +244,8 @@ class UserControllerTests {
 
 	@Test
 	void givenUserIdAndBookId_whenRemoveBookToUser_thenReturnUserWithBooks() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
 		when(bookRepository.findById(any())).thenReturn(Optional.of(book));
 		when(userRepository.save(any())).thenReturn(user);
@@ -277,6 +260,7 @@ class UserControllerTests {
 
 	@Test
 	void givenUserIdAndBookId_whenModifyingBooks_thenReturnUserNotFoundException() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(bookRepository.findById(any())).thenReturn(Optional.of(book));
 
 		mvc.perform(put(apiURL + "/" + nonExistingUserId + "/books/" + bookId + "?action=add"))
@@ -287,6 +271,7 @@ class UserControllerTests {
 
 	@Test
 	void givenUserIdAndBookId_whenModifyingBooks_thenReturnBookNotFoundException() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
 		mvc.perform(put(apiURL + "/" + userId + "/books/" + nonExistingBookId + "?action=add"))
@@ -297,6 +282,8 @@ class UserControllerTests {
 
 	@Test
 	void givenUserIdAndBookId_whenModifyingBooks_thenReturnActionNotFoundException() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		when(userRepository.findById(any())).thenReturn(Optional.of(user));
 		when(bookRepository.findById(any())).thenReturn(Optional.of(book));
 
