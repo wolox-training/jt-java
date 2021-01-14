@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
+import wolox.training.constants.TestsConstants;
+import wolox.training.factories.BookTestFactory;
 import wolox.training.repositories.BookRepository;
 
 @RunWith(SpringRunner.class)
@@ -26,18 +28,7 @@ class BookTests {
 
 	@BeforeEach
 	public void init() {
-
-		this.book = new Book();
-		this.book.setImage("http://someurl.com");
-		this.book.setGenre("Book genre");
-		this.book.setPages(500);
-		this.book.setPublisher("Some publisher");
-		this.book.setTitle("Book title");
-		this.book.setSubtitle("Book subtitle");
-		this.book.setYear("2000");
-		this.book.setIsbn("Some isbn");
-		this.book.setAuthor("Book author");
-	
+		this.book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 	}
 
 	@Test
