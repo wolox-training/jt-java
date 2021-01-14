@@ -53,7 +53,7 @@ class BookTests {
 
 	@Test
 	void givenBook_whenCreate_thenPreconditionsException() {
-		assertThrows(NullPointerException.class, () -> book.setTitle(null));
+		assertThrows(IllegalArgumentException.class, () -> book.setTitle(null));
 	}
 
 }
