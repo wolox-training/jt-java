@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.constants.ExceptionsConstants;
 import wolox.training.dtos.BookDTO;
+import wolox.training.constants.SwaggerConstants;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
@@ -58,8 +59,8 @@ public class BookController {
     @GetMapping
     @ApiOperation(value = "Returns a list of all books", response = Book.class, responseContainer = "List")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "Unauthorized")
+            @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED)
     })
     public ResponseEntity<List<Book>> getAll() {
         return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
@@ -98,11 +99,13 @@ public class BookController {
     @GetMapping("{id}")
     @ApiOperation(value = "Returns a specified book", response = Book.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 404, message = "Not Found")
+            @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
+            @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
-    public ResponseEntity<Book> get(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws BookNotFoundException{
+    public ResponseEntity<Book> get(
+            @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id)
+            throws BookNotFoundException{
         return new ResponseEntity<>(bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(
                 ExceptionsConstants.BOOK_NOT_FOUND)), HttpStatus.OK);
     }
@@ -118,9 +121,9 @@ public class BookController {
     @GetMapping("isbn/{isbn}")
     @ApiOperation(value = "Returns a specified book", response = BookDTO.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 404, message = "Not Found")
+            @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
+            @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<BookDTO> getByIsbn(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable String isbn)
             throws BookNotFoundException, IOException, DatabaseException {
@@ -151,10 +154,12 @@ public class BookController {
     @PostMapping
     @ApiOperation(value = "Creates a book", response = Book.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created"),
-            @ApiResponse(code = 400, message = "Bad Request")
+            @ApiResponse(code = 201, message = SwaggerConstants.CREATED),
+            @ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST)
     })
-    public ResponseEntity<Book> create(@ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody Book book) throws DatabaseException {
+    public ResponseEntity<Book> create(
+            @ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody Book book)
+            throws DatabaseException {
         try {
             return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -174,10 +179,10 @@ public class BookController {
     @PutMapping("{id}")
     @ApiOperation(value = "Updates a specified book", response = Book.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 404, message = "Not Found")
+            @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
+            @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<Book> update(
             @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id,
@@ -207,11 +212,13 @@ public class BookController {
     @DeleteMapping("{id}")
     @ApiOperation(value = "Deletes a specified book")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "No Content"),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 404, message = "Not Found")
+            @ApiResponse(code = 204, message = SwaggerConstants.NO_CONTENT),
+            @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED),
+            @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
-    public ResponseEntity<Void> delete(@ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id) throws BookNotFoundException{
+    public ResponseEntity<Void> delete(
+            @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id)
+            throws BookNotFoundException{
         if(!bookRepository.existsById(id)) {
             throw new BookNotFoundException(ExceptionsConstants.BOOK_NOT_FOUND);
         }
