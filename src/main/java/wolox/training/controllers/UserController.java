@@ -145,7 +145,7 @@ public class UserController {
 	@DeleteMapping("{id}")
 	@ApiOperation(value = "Deletes a specified user", response = User.class)
 	@ApiResponses(value = {
-			@ApiResponse(code = 204, message = "No Content"),
+			@ApiResponse(code = 204, message = SwaggerConstants.NO_CONTENT),
 			@ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
 	})
 	public ResponseEntity<Void> delete(

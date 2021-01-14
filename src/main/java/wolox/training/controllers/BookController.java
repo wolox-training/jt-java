@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.constants.ExceptionsConstants;
+import wolox.training.constants.SwaggerConstants;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.DatabaseException;
 import wolox.training.exceptions.IdMismatchException;
@@ -50,7 +51,7 @@ public class BookController {
      */
     @GetMapping
     @ApiOperation(value = "Returns a list of all books", response = Book.class, responseContainer = "List")
-    @ApiResponse(code = 200, message = "OK")
+    @ApiResponse(code = 200, message = SwaggerConstants.OK)
     public ResponseEntity<List<Book>> getAll() {
         return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
     }
@@ -64,8 +65,8 @@ public class BookController {
     @GetMapping("{id}")
     @ApiOperation(value = "Returns a specified book", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "Not Found")
+            @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<Book> get(
             @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id)
@@ -83,8 +84,8 @@ public class BookController {
     @PostMapping
     @ApiOperation(value = "Creates a book", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created"),
-            @ApiResponse(code = 400, message = "Bad Request")
+            @ApiResponse(code = 201, message = SwaggerConstants.CREATED),
+            @ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST)
     })
     public ResponseEntity<Book> create(
             @ApiParam(value = "user", type = "body", required = true, name = "body") @Valid @RequestBody Book book)
@@ -108,9 +109,9 @@ public class BookController {
     @PutMapping("{id}")
     @ApiOperation(value = "Updates a specified book", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 404, message = "Not Found")
+            @ApiResponse(code = 200, message = SwaggerConstants.OK),
+            @ApiResponse(code = 400, message = SwaggerConstants.BAD_REQUEST),
+            @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<Book> update(
             @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id,
@@ -140,8 +141,8 @@ public class BookController {
     @DeleteMapping("{id}")
     @ApiOperation(value = "Deletes a specified user", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "No Content"),
-            @ApiResponse(code = 404, message = "Not Found")
+            @ApiResponse(code = 204, message = SwaggerConstants.NO_CONTENT),
+            @ApiResponse(code = 404, message = SwaggerConstants.NOT_FOUND)
     })
     public ResponseEntity<Void> delete(
             @ApiParam(value = "id", type = "path", required = true, name = "id", example = "1") @PathVariable int id)
