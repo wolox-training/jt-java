@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -37,11 +38,6 @@ public class User {
 	private Date birthdate;
 
 	@ManyToMany
-	@JoinTable(
-			name = "user_book",
-			joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
-	)
 	private List<Book> books;
 
 	public int getId() {
@@ -77,7 +73,7 @@ public class User {
 	}
 
 	public List<Book> getBooks() {
-		return Collections.unmodifiableList(books);
+		return books != null ? Collections.unmodifiableList(books) : Collections.unmodifiableList(new ArrayList<>());
 	}
 
 	public void setBooks(List<Book> books) {
@@ -90,6 +86,9 @@ public class User {
 	 * @throws BookAlreadyOwnedException: When the book that's being added already is owned by the user
 	 */
 	public void addBook(Book book) throws BookAlreadyOwnedException {
+		if (books == null) {
+			books = new ArrayList<>();
+		}
 		if (books.contains(book)) {
 			throw new BookAlreadyOwnedException(String.format(ExceptionsConstants.BOOK_ALREADY_OWNED, id, book.getId()));
 		}

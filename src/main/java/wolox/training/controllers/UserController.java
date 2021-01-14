@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.constants.ExceptionsConstants;
+import wolox.training.enums.ActionsEnum;
 import wolox.training.exceptions.ActionNotFoundException;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotFoundException;
@@ -133,9 +134,9 @@ public class UserController {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(
 				ExceptionsConstants.BOOK_NOT_FOUND));
 
-		if(action.equals("add")) {
+		if(action.equalsIgnoreCase(ActionsEnum.ADD.name())) {
 			user.addBook(book);
-		} else if (action.equals("remove")) {
+		} else if (action.equalsIgnoreCase(ActionsEnum.REMOVE.name())) {
 			user.removeBook(book);
 		} else throw new ActionNotFoundException(ExceptionsConstants.ACTION_NOT_FOUND);
 
