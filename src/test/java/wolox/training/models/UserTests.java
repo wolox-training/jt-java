@@ -45,7 +45,7 @@ class UserTests {
 
 	@Test
 	void givenUser_whenCreate_thenPreconditionsException() {
-		assertThrows(NullPointerException.class, () -> user.setUsername(null));
+		assertThrows(IllegalArgumentException.class, () -> user.setUsername(null));
 	}
 
 }
