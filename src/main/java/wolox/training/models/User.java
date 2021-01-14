@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.google.common.base.Strings;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -69,7 +71,8 @@ public class User {
 	}
 
 	public void setName(String name) {
-		this.name = checkNotNull(name, PreconditionsConstants.NAME_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(name), PreconditionsConstants.NAME_CANT_BE_NULL);
+		this.name = name;
 	}
 
 	public LocalDate getBirthdate() {
@@ -85,7 +88,8 @@ public class User {
 	}
 
 	public void setUsername(String username) {
-		this.username = checkNotNull(username, PreconditionsConstants.USERNAME_CANT_BE_NULL);
+		checkArgument(!Strings.isNullOrEmpty(username), PreconditionsConstants.USERNAME_CANT_BE_NULL);
+		this.username = username;
 	}
 
 	public List<Book> getBooks() {
