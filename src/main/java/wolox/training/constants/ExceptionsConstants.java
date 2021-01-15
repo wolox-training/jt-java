@@ -14,6 +14,4 @@ public final class ExceptionsConstants {
 	public static final String MODIFY_BOOK_LIST_PARAMETHER_NOT_PRESENT = "The required method needs a path paramether \"action\"";
 	public static final String BOOK_BY_ISBN_NOT_FOUND = "The requested book isbn has not been found in the database or in the external API";
 	public static final String EXTERNAL_API_CONSUMPTION_EXCEPTION = "An internal error ocurred while trying to communicate with an external service";
-	public static final String PUBLISHER_SEARCH_PARAMETER_NOT_PRESENT = "The parameter \"publisher\" is required to search for books";
-	public static final String YEAR_SEARCH_PARAMETER_NOT_PRESENT = "The parameter \"year\" is required to search for books";
 }

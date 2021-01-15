@@ -82,6 +82,23 @@ class UserControllerTests {
 
 	@WithMockUser(value = testUser)
 	@Test
+	void givenSearchParameters_whenSearchUsers_thenReturnUsers() throws Exception {
+		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		List<User> users = Collections.singletonList(user);
+		given(userRepository.findAllBirthdateBetweenAndNameLike(
+				TestsConstants.USER_TEST_CHARSEQUENCE,
+				LocalDate.parse(TestsConstants.USER_TEST_BEGIN_DATE),
+				LocalDate.parse(TestsConstants.USER_TEST_END_DATE))).willReturn(users);
+
+		mvc.perform(get(apiURL + "/search?charSequence=" + TestsConstants.USER_TEST_CHARSEQUENCE +
+				"&begin=" + TestsConstants.USER_TEST_BEGIN_DATE + "&end=" + TestsConstants.USER_TEST_END_DATE))
+				.andExpect(status().isOk())
+				.andExpect(result ->
+						assertEquals(mapper.writeValueAsString(users), result.getResponse().getContentAsString()));
+	}
+
+	@WithMockUser(value = testUser)
+	@Test
 	void givenId_whenGetUser_thenReturnUser() throws Exception {
 		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
@@ -106,7 +123,7 @@ class UserControllerTests {
 
 	@WithMockUser(value = testUser)
 	@Test
-	void givenAuthentication_whenGetAuthenticatedUeser_thenReturnUser() throws Exception {
+	void givenAuthentication_whenGetAuthenticatedUser_thenReturnUser() throws Exception {
 		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		given(userRepository.findByUsername(any())).willReturn(Optional.of(user));
 

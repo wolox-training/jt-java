@@ -15,6 +15,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
 	Optional<Book> findByIsbn(String isbn);
 
-	@Query("SELECT b FROM Book b WHERE publisher = :publisher and b.year = :year and (b.genre = :genre OR :genre IS NULL)")
-	List<Book> findAllByPublisherAndYearAndGenre(@Param("publisher") String publisher, @Param("year") String year, @Param("genre") String genre);
+	@Query("SELECT b FROM Book b "
+			+ "WHERE (b.publisher = :publisher OR :publisher IS NULL) "
+			+ "AND (b.year = :year OR :year IS NULL) "
+			+ "AND (b.genre = :genre OR :genre IS NULL)")
+	List<Book> findAllByPublisherAndYearAndGenre(
+			@Param("publisher") String publisher,
+			@Param("year") String year,
+			@Param("genre") String genre);
 }

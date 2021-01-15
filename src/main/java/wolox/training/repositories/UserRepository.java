@@ -14,6 +14,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Optional<User> findByUsername(String username);
 
-	@Query("SELECT u from User u WHERE (LOWER(u.name) LIKE LOWER(CONCAT('%', :charSequence, '%'))) AND (u.birthdate >= :begin AND u.birthdate <= :end)")
+	@Query("SELECT u FROM User u "
+			+ "WHERE (:charSequence = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :charSequence, '%'))) "
+			+ "AND (CAST(:begin as date) IS NULL OR u.birthdate >= :begin) "
+			+ "AND (CAST(:end as date) IS NULL OR u.birthdate <= :end)")
 	List<User> findAllBirthdateBetweenAndNameLike(@Param("charSequence") String sequence, @Param("begin") LocalDate begin, @Param("end") LocalDate end);
 }

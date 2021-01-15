@@ -21,6 +21,14 @@ public class UserTestFactory {
 			case TestsConstants.ERROR_FACTORY_REQUEST:
 				user.setUsername("testUsernameIsReallyReallyLong");
 				break;
+			case TestsConstants.USER_DIFFEREMT_NAME:
+				user.setName("nombreDePrueba");
+				user.setBirthdate(LocalDate.parse("1999-04-13"));
+				break;
+			case TestsConstants.USER_DIFFERENT_DATE:
+				user.setName("TestUser");
+				user.setBirthdate(LocalDate.parse("1961-06-28"));
+				break;
 		}
 
 		return user;

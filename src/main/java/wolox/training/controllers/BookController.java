@@ -82,11 +82,11 @@ public class BookController {
     })
     public ResponseEntity<List<Book>> search(
             @ApiParam(value = "Book's publisher house", type = "query", required = true, name = "publisher", example = "testPublisher")
-            @NotNull(message = ExceptionsConstants.PUBLISHER_SEARCH_PARAMETER_NOT_PRESENT) @RequestParam String publisher,
+            @RequestParam(required = false) String publisher,
             @ApiParam(value = "Book's publication year", type = "query", required = true, name = "year", example = "1999")
-            @NotNull(message = ExceptionsConstants.YEAR_SEARCH_PARAMETER_NOT_PRESENT) @RequestParam String year,
+            @RequestParam(required = false) String year,
             @ApiParam(value = "Book's genre", type = "query", required = false, name = "genre", example = "Fantasy")
-            @RequestParam String genre) {
+            @RequestParam(required = false) String genre) {
         return new ResponseEntity<>(bookRepository.findAllByPublisherAndYearAndGenre(publisher, year, genre), HttpStatus.OK);
     }
 

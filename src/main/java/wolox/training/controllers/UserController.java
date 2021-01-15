@@ -1,5 +1,6 @@
 package wolox.training.controllers;
 
+import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -79,13 +80,16 @@ public class UserController {
 	})
 	public ResponseEntity<List<User>> search(
 			@ApiParam(value = "Sequence of characters", type = "query", required = true, name = "charSequence", example = "test")
-			@RequestParam String charSequence,
+			@RequestParam(required = false, defaultValue = "") String charSequence,
 			@ApiParam(value = "Beginning date", type = "query", required = true, name = "begin", example = "2000-01-01")
-			@RequestParam String begin,
+			@RequestParam(required = false) String begin,
 			@ApiParam(value = "Ending date", type = "query", required = true, name = "begin", example = "2000-01-01")
-			@RequestParam String end) {
+			@RequestParam(required = false) String end) {
 		return new ResponseEntity<>(
-				userRepository.findAllBirthdateBetweenAndNameLike(charSequence, LocalDate.parse(begin), LocalDate.parse(end)), HttpStatus.OK);
+				userRepository.findAllBirthdateBetweenAndNameLike(
+						charSequence,
+						!Strings.isNullOrEmpty(begin) ? LocalDate.parse(begin) : null,
+						!Strings.isNullOrEmpty(begin) ? LocalDate.parse(end) : null), HttpStatus.OK);
 	}
 
 	/**

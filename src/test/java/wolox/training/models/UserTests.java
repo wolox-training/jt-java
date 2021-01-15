@@ -4,6 +4,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +49,43 @@ class UserTests {
 	@Test
 	void givenUser_whenCreate_thenPreconditionsException() {
 		assertThrows(IllegalArgumentException.class, () -> user.setUsername(null));
+	}
+
+	@Test
+	void givenCharSequenceAndDateRange_whenSearch_thenReturnUsers() {
+
+		String searchCharSequence = TestsConstants.USER_TEST_CHARSEQUENCE;
+		LocalDate searchBeginDate = LocalDate.parse(TestsConstants.USER_TEST_BEGIN_DATE);
+		LocalDate searchEndDate = LocalDate.parse(TestsConstants.USER_TEST_END_DATE);
+
+		User normalUser = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		User diffNameUser = UserTestFactory.getUser(TestsConstants.USER_DIFFEREMT_NAME);
+		User diffBirthdayUser = UserTestFactory.getUser(TestsConstants.USER_DIFFERENT_DATE);
+
+		entityManager.persist(normalUser);
+		entityManager.persist(diffNameUser);
+		entityManager.persist(diffBirthdayUser);
+
+		List<User> fullParameterList = Collections.singletonList(diffBirthdayUser);
+		assertThat(userRepository.findAllBirthdateBetweenAndNameLike(searchCharSequence, searchBeginDate, searchEndDate))
+				.isEqualTo(fullParameterList);
+
+		List<User> noParametersList = Arrays.asList(normalUser, diffNameUser, diffBirthdayUser);
+		assertThat(userRepository.findAllBirthdateBetweenAndNameLike("", null, null))
+				.isEqualTo(noParametersList);
+
+		List<User> noCharSequenceParameterList = Arrays.asList(diffNameUser, diffBirthdayUser);
+		assertThat(userRepository.findAllBirthdateBetweenAndNameLike("", searchBeginDate, searchEndDate))
+				.isEqualTo(noCharSequenceParameterList);
+
+		List<User> noBeginDateParameterList = Collections.singletonList(diffBirthdayUser);
+		assertThat(userRepository.findAllBirthdateBetweenAndNameLike(searchCharSequence, null, searchEndDate))
+				.isEqualTo(noBeginDateParameterList);
+
+		List<User> noEndDateParameterList = Arrays.asList(normalUser ,diffBirthdayUser);
+		assertThat(userRepository.findAllBirthdateBetweenAndNameLike(searchCharSequence, searchBeginDate, null))
+				.isEqualTo(noEndDateParameterList);
+
 	}
 
 }

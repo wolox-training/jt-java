@@ -78,6 +78,21 @@ class BookControllerTests {
 
 	@WithMockUser(value = testUser)
 	@Test
+	void givenSearchParameters_whenSearchBooks_thenReturnJsonArray() throws Exception {
+		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		List<Book> books = Collections.singletonList(book);
+		given(bookRepository.findAllByPublisherAndYearAndGenre(
+				TestsConstants.BOOK_TEST_PUBLISHER, TestsConstants.BOOK_TEST_YEAR, TestsConstants.BOOK_TEST_GENRE)).willReturn(books);
+
+		mvc.perform(get(apiURL + "/search?publisher=" + TestsConstants.BOOK_TEST_PUBLISHER +
+				"&year=" + TestsConstants.BOOK_TEST_YEAR + "&genre=" + TestsConstants.BOOK_TEST_GENRE))
+				.andExpect(status().isOk())
+				.andExpect(result ->
+						assertEquals(mapper.writeValueAsString(books), result.getResponse().getContentAsString()));
+	}
+
+	@WithMockUser(value = testUser)
+	@Test
 	void givenId_whenGetBook_thenReturnBook() throws Exception {
 		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		given(bookRepository.findById(bookId)).willReturn(Optional.of(book));

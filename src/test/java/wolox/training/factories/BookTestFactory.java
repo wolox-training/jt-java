@@ -24,6 +24,18 @@ public class BookTestFactory {
 			case TestsConstants.ERROR_FACTORY_REQUEST:
 				book.setYear("20000");
 				break;
+			case TestsConstants.BOOK_WITHOUT_GENRE:
+				book.setGenre(null);
+				break;
+			case TestsConstants.BOOK_DIFFERENT_PUBLISHER:
+				book.setPublisher("Different publisher");
+				break;
+			case TestsConstants.BOOK_DIFFERENT_YEAR:
+				book.setYear("1999");
+				break;
+			case TestsConstants.BOOK_DIFFERENT_GENRE:
+				book.setGenre("Different genre");
+				break;
 		}
 		return book;
 	}
