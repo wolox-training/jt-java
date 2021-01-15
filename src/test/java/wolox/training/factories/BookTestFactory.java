@@ -3,6 +3,10 @@ package wolox.training.factories;
 import wolox.training.constants.TestsConstants;
 import wolox.training.models.Book;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class BookTestFactory {
 
 	public static Book getBook(String type) {
@@ -33,8 +37,26 @@ public class BookTestFactory {
 			case TestsConstants.BOOK_DIFFERENT_YEAR:
 				book.setYear("1999");
 				break;
+			case TestsConstants.BOOK_DIFFERENT_AUTHOR:
+				book.setAuthor("Test author");
+				break;
+			case TestsConstants.BOOK_DIFFERENT_IMAGE:
+				book.setImage("Test image");
+					break;
+			case TestsConstants.BOOK_DIFFERENT_TITLE:
+				book.setTitle("Test title");
+				break;
+			case TestsConstants.BOOK_DIFFERENT_SUBTITLE:
+				book.setSubtitle("Test subtitle");
+				break;
+			case TestsConstants.BOOK_DIFFERENT_PAGES:
+				book.setPages(450);
+				break;
+			case TestsConstants.BOOK_DIFFERENT_ISBN:
+				book.setIsbn("Test isbn");
+				break;
 			case TestsConstants.BOOK_DIFFERENT_GENRE:
-				book.setGenre("Different genre");
+				book.setGenre("Test genre");
 				break;
 		}
 		return book;

@@ -2,7 +2,7 @@ package wolox.training.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -68,9 +68,9 @@ class BookControllerTests {
 	void whenGetBooks_thenReturnJsonArray() throws Exception {
 		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		List<Book> books = Collections.singletonList(book);
-		given(bookRepository.findAll()).willReturn(books);
+		given(bookRepository.findAll(anyString(), eq(null), eq(null), eq(null), eq(null), eq(null), anyString(), anyInt(), eq(null))).willReturn(books);
 
-		mvc.perform(get(apiURL))
+		mvc.perform(get(apiURL + "?pages=500&genre=" + TestsConstants.BOOK_TEST_GENRE + "&year=" + TestsConstants.BOOK_TEST_YEAR))
 				.andExpect(status().isOk())
 				.andExpect(result ->
 						assertEquals(mapper.writeValueAsString(books), result.getResponse().getContentAsString()));

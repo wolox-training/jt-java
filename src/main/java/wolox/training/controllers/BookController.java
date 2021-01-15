@@ -62,8 +62,28 @@ public class BookController {
             @ApiResponse(code = 200, message = SwaggerConstants.OK),
             @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED)
     })
-    public ResponseEntity<List<Book>> getAll() {
-        return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<Book>> getAll(
+            @ApiParam(value = "Book's genre", type = "query", required = false, name = "genre", example = "Fantasy")
+            @RequestParam(required = false) String genre,
+            @ApiParam(value = "Book's author", type = "query", required = false, name = "author", example = "J.K. Rowling")
+            @RequestParam(required = false) String author,
+            @ApiParam(value = "Book's cover url", type = "query", required = false, name = "image", example = "http://someurl.com")
+            @RequestParam(required = false) String image,
+            @ApiParam(value = "Book's title", type = "query", required = false, name = "title", example = "Harry Potter")
+            @RequestParam(required = false) String title,
+            @ApiParam(value = "Book's subtitle", type = "query", required = false, name = "subtitle", example = "The chamber of secrets")
+            @RequestParam(required = false) String subtitle,
+            @ApiParam(value = "Book's publisher house", type = "query", required = false, name = "publisher", example = "Gigamesh")
+            @RequestParam(required = false) String publisher,
+            @ApiParam(value = "Book's publication year", type = "query", required = false, name = "year", example = "1999")
+            @RequestParam(required = false) String year,
+            @ApiParam(value = "Book's number of pages", type = "query", required = false, name = "pages", example = "750")
+            @RequestParam(required = false, defaultValue = "0") int pages,
+            @ApiParam(value = "Book's ISBN", type = "query", required = false, name = "isbn", example = "0389450")
+            @RequestParam(required = false) String isbn
+    ) {
+        return new ResponseEntity<>(
+                bookRepository.findAll(genre, author, image, title, subtitle, publisher, year, pages, isbn), HttpStatus.OK);
     }
 
     /**
@@ -81,9 +101,9 @@ public class BookController {
             @ApiResponse(code = 401, message = "Unauthorized")
     })
     public ResponseEntity<List<Book>> search(
-            @ApiParam(value = "Book's publisher house", type = "query", required = true, name = "publisher", example = "testPublisher")
+            @ApiParam(value = "Book's publisher house", type = "query", required = false, name = "publisher", example = "testPublisher")
             @RequestParam(required = false) String publisher,
-            @ApiParam(value = "Book's publication year", type = "query", required = true, name = "year", example = "1999")
+            @ApiParam(value = "Book's publication year", type = "query", required = false, name = "year", example = "1999")
             @RequestParam(required = false) String year,
             @ApiParam(value = "Book's genre", type = "query", required = false, name = "genre", example = "Fantasy")
             @RequestParam(required = false) String genre) {

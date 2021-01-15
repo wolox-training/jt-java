@@ -51,44 +51,103 @@ class BookTests {
 	}
 
 	@Test
-	void givenPublisherAndYearAndGenre_whenFindBooks_thenReturnBooks() {
+	void givenPublisherAndYearAndGenre_whenSearchBooks_thenReturnBooks() {
 
 		String searchPublisher = TestsConstants.BOOK_TEST_PUBLISHER;
 		String searchYear = TestsConstants.BOOK_TEST_YEAR;
 		String searchGenre = TestsConstants.BOOK_TEST_GENRE;
 
-		Book fullBook = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		Book normalBook = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		Book diffPublisherBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_PUBLISHER);
 		Book diffYearBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_YEAR);
 		Book diffGenreBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_GENRE);
 		Book nullGenreBook = BookTestFactory.getBook(TestsConstants.BOOK_WITHOUT_GENRE);
 
-		entityManager.persist(fullBook);
+		entityManager.persist(normalBook);
 		entityManager.persist(diffPublisherBook);
 		entityManager.persist(diffYearBook);
 		entityManager.persist(diffGenreBook);
 		entityManager.persist(nullGenreBook);
 		entityManager.flush();
 
-		List<Book> fullParametersList = Collections.singletonList(fullBook);
+		List<Book> fullParametersList = Collections.singletonList(normalBook);
 		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, searchYear, searchGenre))
 				.isEqualTo(fullParametersList);
 
-		List<Book> noParametersList = Arrays.asList(fullBook, diffPublisherBook, diffYearBook, diffGenreBook, nullGenreBook);
+		List<Book> noParametersList = Arrays.asList(normalBook, diffPublisherBook, diffYearBook, diffGenreBook, nullGenreBook);
 		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(null, null, null))
 				.isEqualTo(noParametersList);
 
-		List<Book> noGenreParameterList = Arrays.asList(fullBook, diffGenreBook, nullGenreBook);
+		List<Book> noGenreParameterList = Arrays.asList(normalBook, diffGenreBook, nullGenreBook);
 		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, searchYear, null))
 				.isEqualTo(noGenreParameterList);
 
-		List<Book> noPublisherParameterList = Arrays.asList(fullBook, diffPublisherBook);
+		List<Book> noPublisherParameterList = Arrays.asList(normalBook, diffPublisherBook);
 		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(null, searchYear, searchGenre))
 				.isEqualTo(noPublisherParameterList);
 
-		List<Book> noYearParameterList = Arrays.asList(fullBook, diffYearBook);
+		List<Book> noYearParameterList = Arrays.asList(normalBook, diffYearBook);
 		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, null, searchGenre))
 				.isEqualTo(noYearParameterList);
+	}
+
+	@Test
+	void givenParameters_whenFindAll_thenReturnBooks() {
+		String searchGenre = TestsConstants.BOOK_TEST_GENRE;
+		String searchAuthor = TestsConstants.BOOK_TEST_AUTHOR;
+		String searchImage = TestsConstants.BOOK_TEST_IMAGE;
+		String searchTitle = TestsConstants.BOOK_TEST_TITLE;
+		String searchSubtitle = TestsConstants.BOOK_TEST_SUBTITLE;
+		String searchPublisher = TestsConstants.BOOK_TEST_PUBLISHER;
+		String searchYear = TestsConstants.BOOK_TEST_YEAR;
+		int searchPages = TestsConstants.BOOK_TEST_PAGES;
+		String searchIsbn = TestsConstants.BOOK_TEST_ISBN;
+
+		Book normalBook = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		Book diffPublisherBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_PUBLISHER);
+		Book diffYearBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_YEAR);
+		Book diffGenreBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_GENRE);
+		Book nullGenreBook = BookTestFactory.getBook(TestsConstants.BOOK_WITHOUT_GENRE);
+		Book diffAuthorBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_AUTHOR);
+		Book diffImageBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_IMAGE);
+		Book diffTitleBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_TITLE);
+		Book diffSubtitleBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_SUBTITLE);
+		Book diffPagesBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_PAGES);
+		Book diffIsbnBook = BookTestFactory.getBook(TestsConstants.BOOK_DIFFERENT_ISBN);
+
+		entityManager.persist(normalBook);
+		entityManager.persist(diffPublisherBook);
+		entityManager.persist(diffYearBook);
+		entityManager.persist(diffGenreBook);
+		entityManager.persist(nullGenreBook);
+		entityManager.persist(diffAuthorBook);
+		entityManager.persist(diffImageBook);
+		entityManager.persist(diffTitleBook);
+		entityManager.persist(diffSubtitleBook);
+		entityManager.persist(diffPagesBook);
+		entityManager.persist(diffIsbnBook);
+		entityManager.flush();
+
+		List<Book> filterByGenreList = Arrays.asList(normalBook, diffPublisherBook, diffYearBook, diffAuthorBook,
+				diffImageBook, diffTitleBook, diffSubtitleBook, diffPagesBook, diffIsbnBook);
+		assertThat(bookRepository.findAll(TestsConstants.BOOK_TEST_GENRE, null, null,
+				null, null, null, null, 0, null))
+				.isEqualTo(filterByGenreList);
+
+		List<Book> filterByAuthorList = Collections.singletonList(diffAuthorBook);
+		assertThat(bookRepository.findAll(null, TestsConstants.BOOK_TEST_AUTHOR, null,
+				null, null, null, null, 0, null))
+				.isEqualTo(filterByAuthorList);
+
+		List<Book> filterByPagesList = Collections.singletonList(diffPagesBook);
+		assertThat(bookRepository.findAll(null, null, null,
+				null, null, null, null, TestsConstants.BOOK_TEST_PAGES, null))
+				.isEqualTo(filterByPagesList);
+
+		List<Book> filterByPublisherAndYearList = Collections.singletonList(diffYearBook);
+		assertThat(bookRepository.findAll(null, null, null,
+				null, null, TestsConstants.BOOK_TEST_PUBLISHER, TestsConstants.BOOK_TEST_DIFFERENT_YEAR, 0, null))
+				.isEqualTo(filterByPublisherAndYearList);
 	}
 
 }

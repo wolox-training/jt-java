@@ -59,7 +59,7 @@ class UserTests {
 		LocalDate searchEndDate = LocalDate.parse(TestsConstants.USER_TEST_END_DATE);
 
 		User normalUser = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
-		User diffNameUser = UserTestFactory.getUser(TestsConstants.USER_DIFFEREMT_NAME);
+		User diffNameUser = UserTestFactory.getUser(TestsConstants.USER_DIFFERENT_NAME);
 		User diffBirthdayUser = UserTestFactory.getUser(TestsConstants.USER_DIFFERENT_DATE);
 
 		entityManager.persist(normalUser);
