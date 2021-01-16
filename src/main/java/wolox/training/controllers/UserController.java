@@ -11,6 +11,9 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -61,8 +64,14 @@ public class UserController {
 			@ApiResponse(code = 200, message = SwaggerConstants.OK),
 			@ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED)
 	})
-	public ResponseEntity<List<User>> getAll() {
-		return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+	public ResponseEntity<Page<User>> getAll(
+			@ApiParam(value = "Index where paging is going to start", type = "query", required = true, name = "from", example = "0")
+			@RequestParam(defaultValue = "0") Integer from,
+			@ApiParam(value = "Number of books the page is containing", type = "query", required = true, name = "size", example = "10")
+			@RequestParam(defaultValue = "10") Integer size,
+			@ApiParam(value = "Name of the attribute the sorting is applying on", type = "query", required = true, name = "sort", example = "id")
+			@RequestParam(defaultValue = "id") String sort) {
+		return new ResponseEntity<>(userRepository.findAll(PageRequest.of(from, size, Sort.by(sort))), HttpStatus.OK);
 	}
 
 	/**
@@ -78,18 +87,25 @@ public class UserController {
 			@ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 401, message = "Unauthorized")
 	})
-	public ResponseEntity<List<User>> search(
+	public ResponseEntity<Page<User>> search(
 			@ApiParam(value = "Sequence of characters", type = "query", required = true, name = "charSequence", example = "test")
 			@RequestParam(required = false, defaultValue = "") String charSequence,
 			@ApiParam(value = "Beginning date", type = "query", required = true, name = "begin", example = "2000-01-01")
 			@RequestParam(required = false) String begin,
 			@ApiParam(value = "Ending date", type = "query", required = true, name = "begin", example = "2000-01-01")
-			@RequestParam(required = false) String end) {
+			@RequestParam(required = false) String end,
+			@ApiParam(value = "Index where paging is going to start", type = "query", required = true, name = "from", example = "0")
+			@RequestParam(defaultValue = "0") Integer from,
+			@ApiParam(value = "Number of books the page is containing", type = "query", required = true, name = "size", example = "10")
+			@RequestParam(defaultValue = "10") Integer size,
+			@ApiParam(value = "Name of the attribute the sorting is applying on", type = "query", required = true, name = "sort", example = "id")
+			@RequestParam(defaultValue = "id") String sort) {
 		return new ResponseEntity<>(
 				userRepository.findAllBirthdateBetweenAndNameLike(
 						charSequence,
 						!Strings.isNullOrEmpty(begin) ? LocalDate.parse(begin) : null,
-						!Strings.isNullOrEmpty(begin) ? LocalDate.parse(end) : null), HttpStatus.OK);
+						!Strings.isNullOrEmpty(begin) ? LocalDate.parse(end) : null,
+						PageRequest.of(from, size, Sort.by(sort))), HttpStatus.OK);
 	}
 
 	/**

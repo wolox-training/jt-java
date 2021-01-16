@@ -22,6 +22,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -68,12 +72,18 @@ class BookControllerTests {
 	void whenGetBooks_thenReturnJsonArray() throws Exception {
 		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		List<Book> books = Collections.singletonList(book);
-		given(bookRepository.findAll(anyString(), eq(null), eq(null), eq(null), eq(null), eq(null), anyString(), anyInt(), eq(null))).willReturn(books);
+		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id"));
+		Page<Book> page = new PageImpl<>(books, pageRequest, 10);
+
+		given(bookRepository.findAll(
+				anyString(), eq(null), eq(null), eq(null), eq(null), eq(null), anyString(),
+				anyInt(), eq(null), any()))
+				.willReturn(page);
 
 		mvc.perform(get(apiURL + "?pages=500&genre=" + TestsConstants.BOOK_TEST_GENRE + "&year=" + TestsConstants.BOOK_TEST_YEAR))
 				.andExpect(status().isOk())
 				.andExpect(result ->
-						assertEquals(mapper.writeValueAsString(books), result.getResponse().getContentAsString()));
+						assertEquals(mapper.writeValueAsString(page), result.getResponse().getContentAsString()));
 	}
 
 	@WithMockUser(value = testUser)
@@ -81,14 +91,16 @@ class BookControllerTests {
 	void givenSearchParameters_whenSearchBooks_thenReturnJsonArray() throws Exception {
 		Book book = BookTestFactory.getBook(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		List<Book> books = Collections.singletonList(book);
+		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id"));
+		Page<Book> page = new PageImpl<>(books, pageRequest, 10);
 		given(bookRepository.findAllByPublisherAndYearAndGenre(
-				TestsConstants.BOOK_TEST_PUBLISHER, TestsConstants.BOOK_TEST_YEAR, TestsConstants.BOOK_TEST_GENRE)).willReturn(books);
+				anyString(), anyString(), anyString(), any())).willReturn(page);
 
 		mvc.perform(get(apiURL + "/search?publisher=" + TestsConstants.BOOK_TEST_PUBLISHER +
 				"&year=" + TestsConstants.BOOK_TEST_YEAR + "&genre=" + TestsConstants.BOOK_TEST_GENRE))
 				.andExpect(status().isOk())
 				.andExpect(result ->
-						assertEquals(mapper.writeValueAsString(books), result.getResponse().getContentAsString()));
+						assertEquals(mapper.writeValueAsString(page), result.getResponse().getContentAsString()));
 	}
 
 	@WithMockUser(value = testUser)

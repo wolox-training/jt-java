@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 import wolox.training.constants.TestsConstants;
 import wolox.training.factories.BookTestFactory;
@@ -28,6 +30,7 @@ class BookTests {
 	private BookRepository bookRepository;
 
 	private Book book;
+	private PageRequest page = PageRequest.of(0, 10, Sort.by("id"));
 
 	@BeforeEach
 	public void init() {
@@ -71,23 +74,23 @@ class BookTests {
 		entityManager.flush();
 
 		List<Book> fullParametersList = Collections.singletonList(normalBook);
-		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, searchYear, searchGenre))
+		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, searchYear, searchGenre, page).getContent())
 				.isEqualTo(fullParametersList);
 
 		List<Book> noParametersList = Arrays.asList(normalBook, diffPublisherBook, diffYearBook, diffGenreBook, nullGenreBook);
-		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(null, null, null))
+		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(null, null, null, page).getContent())
 				.isEqualTo(noParametersList);
 
 		List<Book> noGenreParameterList = Arrays.asList(normalBook, diffGenreBook, nullGenreBook);
-		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, searchYear, null))
+		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, searchYear, null, page).getContent())
 				.isEqualTo(noGenreParameterList);
 
 		List<Book> noPublisherParameterList = Arrays.asList(normalBook, diffPublisherBook);
-		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(null, searchYear, searchGenre))
+		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(null, searchYear, searchGenre, page).getContent())
 				.isEqualTo(noPublisherParameterList);
 
 		List<Book> noYearParameterList = Arrays.asList(normalBook, diffYearBook);
-		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, null, searchGenre))
+		assertThat(bookRepository.findAllByPublisherAndYearAndGenre(searchPublisher, null, searchGenre, page).getContent())
 				.isEqualTo(noYearParameterList);
 	}
 
@@ -131,22 +134,22 @@ class BookTests {
 		List<Book> filterByGenreList = Arrays.asList(normalBook, diffPublisherBook, diffYearBook, diffAuthorBook,
 				diffImageBook, diffTitleBook, diffSubtitleBook, diffPagesBook, diffIsbnBook);
 		assertThat(bookRepository.findAll(TestsConstants.BOOK_TEST_GENRE, null, null,
-				null, null, null, null, 0, null))
+				null, null, null, null, 0, null, page).getContent())
 				.isEqualTo(filterByGenreList);
 
 		List<Book> filterByAuthorList = Collections.singletonList(diffAuthorBook);
 		assertThat(bookRepository.findAll(null, TestsConstants.BOOK_TEST_AUTHOR, null,
-				null, null, null, null, 0, null))
+				null, null, null, null, 0, null, page).getContent())
 				.isEqualTo(filterByAuthorList);
 
 		List<Book> filterByPagesList = Collections.singletonList(diffPagesBook);
 		assertThat(bookRepository.findAll(null, null, null,
-				null, null, null, null, TestsConstants.BOOK_TEST_PAGES, null))
+				null, null, null, null, TestsConstants.BOOK_TEST_PAGES, null, page).getContent())
 				.isEqualTo(filterByPagesList);
 
 		List<Book> filterByPublisherAndYearList = Collections.singletonList(diffYearBook);
 		assertThat(bookRepository.findAll(null, null, null,
-				null, null, TestsConstants.BOOK_TEST_PUBLISHER, TestsConstants.BOOK_TEST_DIFFERENT_YEAR, 0, null))
+				null, null, TestsConstants.BOOK_TEST_PUBLISHER, TestsConstants.BOOK_TEST_DIFFERENT_YEAR, 0, null, page).getContent())
 				.isEqualTo(filterByPublisherAndYearList);
 	}
 

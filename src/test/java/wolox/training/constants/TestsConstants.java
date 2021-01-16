@@ -30,6 +30,7 @@ public final class TestsConstants {
 	public static final String BOOK_DIFFERENT_ISBN = "DIFFERENT_ISBN";
 	public static final String BOOK_DIFFERENT_PUBLISHER = "DIFFERENT_PUBLISHER";
 	public static final String BOOK_DIFFERENT_YEAR = "DIFFERENT_YEAR";
+	public static final String BOOK_PAGE = "BOOK_PAGE";
 
 	public static final String USER_TEST_CHARSEQUENCE = "test";
 	public static final String USER_TEST_BEGIN_DATE = "1960-01-01";

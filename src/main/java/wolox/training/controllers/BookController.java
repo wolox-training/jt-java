@@ -12,6 +12,9 @@ import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +65,7 @@ public class BookController {
             @ApiResponse(code = 200, message = SwaggerConstants.OK),
             @ApiResponse(code = 401, message = SwaggerConstants.UNAUTHORIZED)
     })
-    public ResponseEntity<List<Book>> getAll(
+    public ResponseEntity<Page<Book>> getAll(
             @ApiParam(value = "Book's genre", type = "query", required = false, name = "genre", example = "Fantasy")
             @RequestParam(required = false) String genre,
             @ApiParam(value = "Book's author", type = "query", required = false, name = "author", example = "J.K. Rowling")
@@ -78,12 +81,20 @@ public class BookController {
             @ApiParam(value = "Book's publication year", type = "query", required = false, name = "year", example = "1999")
             @RequestParam(required = false) String year,
             @ApiParam(value = "Book's number of pages", type = "query", required = false, name = "pages", example = "750")
-            @RequestParam(required = false, defaultValue = "0") int pages,
+            @RequestParam(required = false, defaultValue = "0") Integer pages,
             @ApiParam(value = "Book's ISBN", type = "query", required = false, name = "isbn", example = "0389450")
-            @RequestParam(required = false) String isbn
+            @RequestParam(required = false) String isbn,
+            @ApiParam(value = "Index where paging is going to start", type = "query", required = true, name = "from", example = "0")
+            @RequestParam(defaultValue = "0") Integer from,
+            @ApiParam(value = "Number of books the page is containing", type = "query", required = true, name = "size", example = "10")
+            @RequestParam(defaultValue = "10") Integer size,
+            @ApiParam(value = "Name of the attribute the sorting is applying on", type = "query", required = true, name = "sort", example = "id")
+            @RequestParam(defaultValue = "id") String sort
     ) {
         return new ResponseEntity<>(
-                bookRepository.findAll(genre, author, image, title, subtitle, publisher, year, pages, isbn), HttpStatus.OK);
+                bookRepository.findAll(
+                        genre, author, image, title, subtitle, publisher, year, pages, isbn, PageRequest.of(from, size, Sort.by(sort)))
+                , HttpStatus.OK);
     }
 
     /**
@@ -100,14 +111,21 @@ public class BookController {
             @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 401, message = "Unauthorized")
     })
-    public ResponseEntity<List<Book>> search(
+    public ResponseEntity<Page<Book>> search(
             @ApiParam(value = "Book's publisher house", type = "query", required = false, name = "publisher", example = "testPublisher")
             @RequestParam(required = false) String publisher,
             @ApiParam(value = "Book's publication year", type = "query", required = false, name = "year", example = "1999")
             @RequestParam(required = false) String year,
             @ApiParam(value = "Book's genre", type = "query", required = false, name = "genre", example = "Fantasy")
-            @RequestParam(required = false) String genre) {
-        return new ResponseEntity<>(bookRepository.findAllByPublisherAndYearAndGenre(publisher, year, genre), HttpStatus.OK);
+            @RequestParam(required = false) String genre,
+            @ApiParam(value = "Index where paging is going to start", type = "query", required = true, name = "from", example = "0")
+            @RequestParam(defaultValue = "0") Integer from,
+            @ApiParam(value = "Number of books the page is containing", type = "query", required = true, name = "size", example = "10")
+            @RequestParam(defaultValue = "10") Integer size,
+            @ApiParam(value = "Name of the attribute the sorting is applying on", type = "query", required = true, name = "sort", example = "id")
+            @RequestParam(defaultValue = "id") String sort
+            ) {
+        return new ResponseEntity<>(bookRepository.findAllByPublisherAndYearAndGenre(publisher, year, genre, PageRequest.of(from, size, Sort.by(sort))), HttpStatus.OK);
     }
 
     /**

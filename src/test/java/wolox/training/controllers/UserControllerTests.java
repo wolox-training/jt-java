@@ -3,6 +3,7 @@ package wolox.training.controllers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -23,6 +24,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -72,12 +77,15 @@ class UserControllerTests {
 	void whenGetUsers_thenReturnJsonArray() throws Exception {
 		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		List<User> users = Collections.singletonList(user);
-		given(userRepository.findAll()).willReturn(users);
+		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id"));
+		Page<User> page = new PageImpl<>(users, pageRequest, 10);
+
+		given(userRepository.findAll(pageRequest)).willReturn(page);
 
 		mvc.perform(get(apiURL))
 				.andExpect(status().isOk())
 				.andExpect(result ->
-						assertEquals(mapper.writeValueAsString(users), result.getResponse().getContentAsString()));
+						assertEquals(mapper.writeValueAsString(page), result.getResponse().getContentAsString()));
 	}
 
 	@WithMockUser(value = testUser)
@@ -85,16 +93,20 @@ class UserControllerTests {
 	void givenSearchParameters_whenSearchUsers_thenReturnUsers() throws Exception {
 		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
 		List<User> users = Collections.singletonList(user);
+		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id"));
+		Page<User> page = new PageImpl<>(users, pageRequest, 10);
+
 		given(userRepository.findAllBirthdateBetweenAndNameLike(
-				TestsConstants.USER_TEST_CHARSEQUENCE,
-				LocalDate.parse(TestsConstants.USER_TEST_BEGIN_DATE),
-				LocalDate.parse(TestsConstants.USER_TEST_END_DATE))).willReturn(users);
+				anyString(),
+				any(),
+				any(),
+				any())).willReturn(page);
 
 		mvc.perform(get(apiURL + "/search?charSequence=" + TestsConstants.USER_TEST_CHARSEQUENCE +
 				"&begin=" + TestsConstants.USER_TEST_BEGIN_DATE + "&end=" + TestsConstants.USER_TEST_END_DATE))
 				.andExpect(status().isOk())
 				.andExpect(result ->
-						assertEquals(mapper.writeValueAsString(users), result.getResponse().getContentAsString()));
+						assertEquals(mapper.writeValueAsString(page), result.getResponse().getContentAsString()));
 	}
 
 	@WithMockUser(value = testUser)
