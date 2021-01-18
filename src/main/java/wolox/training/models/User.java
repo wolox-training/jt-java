@@ -27,6 +27,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import wolox.training.constants.ExceptionsConstants;
 import wolox.training.constants.PreconditionsConstants;
 import wolox.training.exceptions.BookAlreadyOwnedException;
@@ -36,6 +40,8 @@ import wolox.training.exceptions.BookAlreadyOwnedException;
 @ApiModel
 @JsonInclude(Include.NON_NULL)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Data
+@NoArgsConstructor
 public class User {
 
 	@Id
@@ -64,39 +70,16 @@ public class User {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@JsonDeserialize(using = LocalDateDeserializer.class)
 	@JsonSerialize(using = LocalDateSerializer.class)
+	@NonNull
 	private LocalDate birthdate;
 
 	@ManyToMany
 	@ApiModelProperty(notes = "Books: Books assigned to the user", required = true)
 	private List<Book> books;
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
 	public void setName(String name) {
 		checkArgument(!Strings.isNullOrEmpty(name), PreconditionsConstants.NAME_CANT_BE_NULL);
 		this.name = name;
-	}
-
-	public LocalDate getBirthdate() {
-		return birthdate;
-	}
-
-	public void setBirthdate(LocalDate birthdate) {
-		this.birthdate = checkNotNull(birthdate, PreconditionsConstants.BIRTHDAY_CANT_BE_NULL);
-	}
-
-	public String getUsername() {
-		return username;
 	}
 
 	public void setUsername(String username) {
@@ -106,18 +89,6 @@ public class User {
 
 	public List<Book> getBooks() {
 		return books != null ? Collections.unmodifiableList(books) : Collections.unmodifiableList(new ArrayList<>());
-	}
-
-	public void setBooks(List<Book> books) {
-		this.books = books;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	/**

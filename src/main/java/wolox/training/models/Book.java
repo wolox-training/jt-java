@@ -20,6 +20,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import wolox.training.constants.PreconditionsConstants;
 import wolox.training.dtos.BookDTO;
 
@@ -28,6 +31,8 @@ import wolox.training.dtos.BookDTO;
 @ApiModel
 @JsonInclude(Include.NON_NULL)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Data
+@NoArgsConstructor
 public class Book {
 
 	@Id
@@ -81,9 +86,6 @@ public class Book {
 	@ManyToMany(mappedBy = "books", fetch = FetchType.LAZY)
 	List<User> users;
 
-	public Book() {
-	}
-
 	public Book(BookDTO bookDTO) {
 		this.isbn = bookDTO.getIsbn();
 		this.year = bookDTO.getPublishDate();
@@ -95,51 +97,21 @@ public class Book {
 		this.publisher = bookDTO.getPublishers().get(0);
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getGenre() {
-		return genre;
-	}
-
-	public void setGenre(String genre) {
-		this.genre = genre;
-	}
-
-	public String getAuthor() {
-		return author;
-	}
-
 	public void setAuthor(String author) {
 		checkArgument(!Strings.isNullOrEmpty(author), PreconditionsConstants.AUTHOR_CANT_BE_NULL);
 		this.author = author;
 	}
 
-	public String getImage() {
-		return image;
-	}
 
 	public void setImage(String image) {
 		checkArgument(!Strings.isNullOrEmpty(image), PreconditionsConstants.IMAGE_URL_CANT_BE_NULL);
 		this.image = image;
 	}
 
-	public String getTitle() {
-		return title;
-	}
 
 	public void setTitle(String title) {
 		checkArgument(!Strings.isNullOrEmpty(title), PreconditionsConstants.TITLE_CANT_BE_NULL);
 		this.title = title;
-	}
-
-	public String getSubtitle() {
-		return subtitle;
 	}
 
 	public void setSubtitle(String subtitle) {
@@ -147,17 +119,9 @@ public class Book {
 		this.subtitle = subtitle;
 	}
 
-	public String getPublisher() {
-		return publisher;
-	}
-
 	public void setPublisher(String publisher) {
 		checkArgument(!Strings.isNullOrEmpty(publisher), PreconditionsConstants.PUBLISHER_CANT_BE_NULL);
 		this.publisher = publisher;
-	}
-
-	public String getYear() {
-		return year;
 	}
 
 	public void setYear(String year) {
@@ -165,30 +129,14 @@ public class Book {
 		this.year = year;
 	}
 
-	public String getIsbn() {
-		return isbn;
-	}
-
 	public void setIsbn(String isbn) {
 		checkArgument(!Strings.isNullOrEmpty(isbn), PreconditionsConstants.ISBN_CANT_BE_NULL);
 		this.isbn = isbn;
 	}
 
-	public Integer getPages() {
-		return pages;
-	}
-
 	public void setPages(Integer pages) {
 		checkArgument(pages > 0, PreconditionsConstants.PAGES_CANT_BE_0);
 		this.pages = pages;
-	}
-
-	public List<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(List<User> users) {
-		this.users = users;
 	}
 
 	@Override
