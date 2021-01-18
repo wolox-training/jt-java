@@ -3,10 +3,17 @@ package wolox.training.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import wolox.training.dtos.OpenLibraryBookResponseDTO.OpenLibraryBookAuthorDTO;
 import wolox.training.dtos.OpenLibraryBookResponseDTO.OpenLibraryBookPublisherDTO;
 import wolox.training.models.Book;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookDTO {
 
 	private String isbn;
@@ -15,7 +22,7 @@ public class BookDTO {
 	@JsonProperty("publish_date")
 	private String publishDate;
 	private Integer pages;
-	@JsonProperty("imege_url")
+	@JsonProperty("image_url")
 	private String imageUrl;
 	private List<String> publishers;
 	private List<String> authors;
@@ -43,69 +50,5 @@ public class BookDTO {
 		this.authors = openLibraryBook.getAuthors().stream().map(OpenLibraryBookAuthorDTO::getName).collect(
 				Collectors.toList());
 		this.imageUrl = openLibraryBook.getCover().getMedium();
-	}
-
-	public String getIsbn() {
-		return isbn;
-	}
-
-	public void setIsbn(String isbn) {
-		this.isbn = isbn;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getSubtitle() {
-		return subtitle;
-	}
-
-	public void setSubtitle(String subtitle) {
-		this.subtitle = subtitle;
-	}
-
-	public String getPublishDate() {
-		return publishDate;
-	}
-
-	public void setPublishDate(String publishDate) {
-		this.publishDate = publishDate;
-	}
-
-	public Integer getPages() {
-		return pages;
-	}
-
-	public void setPages(Integer pages) {
-		this.pages = pages;
-	}
-
-	public List<String> getPublishers() {
-		return publishers;
-	}
-
-	public void setPublishers(List<String> publishers) {
-		this.publishers = publishers;
-	}
-
-	public List<String> getAuthors() {
-		return authors;
-	}
-
-	public void setAuthors(List<String> authors) {
-		this.authors = authors;
-	}
-
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
 	}
 }

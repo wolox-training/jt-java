@@ -1,8 +1,13 @@
 package wolox.training.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class OpenLibraryBookResponseDTO {
 
 	private String title;
@@ -15,106 +20,22 @@ public class OpenLibraryBookResponseDTO {
 	private List<OpenLibraryBookPublisherDTO> publishers;
 	private OpenLibraryBookCoverDTO cover;
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getSubtitle() {
-		return subtitle;
-	}
-
-	public void setSubtitle(String subtitle) {
-		this.subtitle = subtitle;
-	}
-
-	public Integer getPages() {
-		return pages;
-	}
-
-	public void setPages(Integer pages) {
-		this.pages = pages;
-	}
-
-	public String getPublishDate() {
-		return publishDate;
-	}
-
-	public void setPublishDate(String publishDate) {
-		this.publishDate = publishDate;
-	}
-
-	public List<OpenLibraryBookAuthorDTO> getAuthors() {
-		return authors;
-	}
-
-	public void setAuthors(
-			List<OpenLibraryBookAuthorDTO> authors) {
-		this.authors = authors;
-	}
-
-	public List<OpenLibraryBookPublisherDTO> getPublishers() {
-		return publishers;
-	}
-
-	public void setPublishers(
-			List<OpenLibraryBookPublisherDTO> publishers) {
-		this.publishers = publishers;
-	}
-
-	public OpenLibraryBookCoverDTO getCover() {
-		return cover;
-	}
-
-	public void setCover(OpenLibraryBookCoverDTO cover) {
-		this.cover = cover;
-	}
-
+	@Data
+	@NoArgsConstructor
 	static class OpenLibraryBookAuthorDTO {
 		private String url;
 		private String name;
-
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
 	}
 
+	@Data
+	@NoArgsConstructor
 	static class OpenLibraryBookPublisherDTO {
 		private String name;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
 	}
 
+	@Data
+	@NoArgsConstructor
 	static class OpenLibraryBookCoverDTO {
 		private String medium;
-
-		public String getMedium() {
-			return medium;
-		}
-
-		public void setMedium(String medium) {
-			this.medium = medium;
-		}
 	}
 }
