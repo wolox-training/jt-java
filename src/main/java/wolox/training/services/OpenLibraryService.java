@@ -30,7 +30,7 @@ public class OpenLibraryService {
 		ResponseEntity<Map<String, OpenLibraryBookResponseDTO>> response = restTemplate.exchange(String.format(ServicesConstants.OPENLIBRARY_SERVICE_URL, isbn),
 				HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, OpenLibraryBookResponseDTO>>() {});
 
-		if(response.getStatusCode().equals(HttpStatus.OK) && response.getBody() != null) {
+		if(response.getStatusCode().equals(HttpStatus.OK) && response.getBody() != null && !response.getBody().isEmpty()) {
 			Map<String, OpenLibraryBookResponseDTO> responseMap = response.getBody();
 			return new BookDTO(isbn, responseMap.get("ISBN:" + isbn));
 		} else throw new BookNotFoundException(ExceptionsConstants.BOOK_BY_ISBN_NOT_FOUND);

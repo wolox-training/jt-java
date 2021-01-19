@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -75,8 +76,9 @@ class UserControllerTests {
 	@WithMockUser(value = testUser)
 	@Test
 	void whenGetUsers_thenReturnJsonArray() throws Exception {
-		User user = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
-		List<User> users = Collections.singletonList(user);
+		User studentUser = UserTestFactory.getUser(TestsConstants.SIMPLE_FACTORY_REQUEST);
+		User professorUser = UserTestFactory.getUser(TestsConstants.PROFESSOR_USER);
+		List<User> users = Arrays.asList(studentUser, professorUser);
 		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id"));
 		Page<User> page = new PageImpl<>(users, pageRequest, 10);
 

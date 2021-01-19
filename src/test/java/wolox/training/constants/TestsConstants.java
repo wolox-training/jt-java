@@ -37,5 +37,6 @@ public final class TestsConstants {
 	public static final String USER_TEST_END_DATE = "2000-01-01";
 	public static final String USER_DIFFERENT_NAME = "DIFFERENT_NAME";
 	public static final String USER_DIFFERENT_DATE = "DIFFERENT_DATE";
+	public static final String PROFESSOR_USER = "PROFESSOR";
 
 }
